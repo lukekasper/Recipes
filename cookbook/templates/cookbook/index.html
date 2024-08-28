@@ -1,0 +1,40 @@
+{% extends "cookbook/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <div id="all_recipes-view">
+        <h3 id="recipes-title"></h3>
+        <p id="query_error" class="error"></p>
+        <a id="new_recipe-link" href="new_recipe">Add New Recipe</a>
+        <hr>
+        <div id="all_recipes"></div>
+        <div id="cuisines-view">
+            <ul id="cuisines" class="matched_recipe-list"></ul>
+        </div>
+        <div id="favorites-view">
+            <ul id="favorites" class="matched_recipe-list"></ul>
+        </div>
+        <div id="recipe-view">
+            <div id="recipe-image-div"></div>
+            <div id="top-recipe-info"></div>
+            <div id="recipe-info-lists"></div>
+            <div id="favorites-div">
+                <button id="favorites-button" class="btn btn-sm btn-outline-primary"></button>
+            </div>
+        </div>
+
+        <div id="matched_recipes-view">
+            <h4>Recipes with key word(s): <span id="header" class="search_header"></span></h4>
+            <div id="d1" class="list_div">
+                <ul id="ul1" class="rec"></ul>
+            </div>
+            <div id="d2" class="list_div">
+                <ul id="ul2" class="rec"></ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'cookbook/recipes.js' %}"></script>
+{% endblock %}

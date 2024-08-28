@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # Django application service
+  web:
+    build: .  # directory to Dockerfile (same directory as docker-compose file in this example)
+    container_name: recipes_app
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME}
+      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+    ports:
+      - 8000:8000  # Expose Django app port
+    depends_on:
+      - mysql
+    volumes:
+      - app_data:/home/Recipes    # Separate volume for Django app code persistence
+
+  # MySQL service
+  mysql:
+    image: mysql:latest
+    container_name: recipes_mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - 3306:3306
+    volumes:
+      - db_data:/var/lib/mysql   # Separate volume for database persistence
+
+volumes:
+  app_data:
+    driver: local
+  db_data:
+    driver: local
+  
