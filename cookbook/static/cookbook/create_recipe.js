@@ -198,13 +198,14 @@ async function postFormData(url, data) {
     let errorMessage = "";
     try {
         // Get the CSRF token value from the cookie
-        const csrfToken = getCookie('csrftoken');
+        //const csrfToken = getCookie('csrftoken');
 
         const response = await fetch(url, {
             method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-            },
+//            headers: {
+////                'X-CSRFToken': csrfToken,
+//                'Content-Type': 'application/json'
+//            },
             body: data,
         });
 
@@ -214,6 +215,8 @@ async function postFormData(url, data) {
             const errorMessage = await response.text();
             console.error('Error:', errorMessage);
         }
+        console.log('working post recipe');
+
         return errorMessage
     }
     catch (error) {
@@ -225,7 +228,7 @@ async function postFormData(url, data) {
 }
 
 // Helper function to get the CSRF token value from the cookie
-export function getCookie(name) {
+function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();

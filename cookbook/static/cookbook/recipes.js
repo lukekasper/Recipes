@@ -1,6 +1,3 @@
-// import api call functions from other js file
-import { getCookie } from "./create_recipe.js";
-
 document.addEventListener('DOMContentLoaded', function() {
 
     // default load all recipes
@@ -100,7 +97,7 @@ function generate_page(title, api_path, id) {
                 element.addEventListener('click', () => load_recipe(content));
             }
         });
-    };
+    }
     else {
         error = responseJSON.responseError;
         document.querySelector("#query_error").innerHTML = error;
@@ -163,19 +160,21 @@ function query_recipes(api_path, key, title, start, end) {
     // Send API request to get recipes
     const responseJSON = getData(api_path, 'start', start, 'end', end);
 
-    if (responseJSON.responseError.length === 0) {
+    if (responseJSON && responseJSON.responseError) {
+        if(responseJSON.responseError.length === 0) {
 
-        // render a div for each post, displaying relevant info
-        const data = responseJSON.responseData;
-        data[key].forEach(recipe => {
+            // render a div for each post, displaying relevant info
+            const data = responseJSON.responseData;
+            data[key].forEach(recipe => {
 
-            // run function to generate html
-            make_recipe_html(recipe);
-        });
+                // run function to generate html
+                make_recipe_html(recipe);
+            });
 
-        // update page title
-        document.querySelector('#recipes-title').innerHTML = title;
-    };
+            // update page title
+            document.querySelector('#recipes-title').innerHTML = title;
+        }
+    }
 
     // display response error on front end
     else {
@@ -653,7 +652,7 @@ function load_recipe(title) {
             document.querySelector('#favorites-button').addEventListener('click', () =>
             update_favorites(data.recipe.title, data.favorite_flag), true);
         }
-    };
+    }
 
     // otherwise display error message to the user
     else {
@@ -856,7 +855,7 @@ function search_recipes() {
 
         // clear search bar
         document.querySelector('#search_box').value = '';
-    };
+    }
 
     // otherwise display error message to the user
     else {
@@ -920,26 +919,28 @@ async function postData(url, data, apiMethod) {
 async function getData(url, param1Name = '', data1 = '', param2Name = '', data2 = '') {
     let responseJSON = {responseData: '', responseError: ''};
 
+    let urlWithParams = '';
+
     // Append the data as a query parameter to the URL
     if (param2Name.length != 0) {
-        const urlWithParams = `${url}?${param1Name}=${encodeURIComponent(data1)}&${param2Name}=${encodeURIComponent(data2)}`;
+        urlWithParams = `${url}?${param1Name}=${encodeURIComponent(data1)}&${param2Name}=${encodeURIComponent(data2)}`;
     }
     else if (param1Name.length != 0) {
-        const urlWithParams = `${url}?${param1Name}=${encodeURIComponent(data1)}`;
+        urlWithParams = `${url}?${param1Name}=${encodeURIComponent(data1)}`;
     }
     else {
-        const urlWithParams = `${url};
+        urlWithParams = `${url}`;
     }
 
     try {
         // Get the CSRF token value from the cookie
-        const csrfToken = getCookie('csrftoken');
+        //const csrfToken = getCookie('csrftoken');
 
         const response = await fetch(urlWithParams, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
+                //'X-CSRFToken': csrfToken,
             },
         });
 
@@ -962,4 +963,11 @@ async function getData(url, param1Name = '', data1 = '', param2Name = '', data2 
         responseJSON.responseError = error;
         return responseJSON
     }
+}
+
+// Helper function to get the CSRF token value from the cookie
+function getCookie(name) {
+    let value = `; ${document.cookie}`;
+    let parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
 }

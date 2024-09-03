@@ -7,10 +7,10 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.cache import cache
-from django.views.decorators.cache import cache_page
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
+#from django.core.cache import cache
+#from django.views.decorators.cache import cache_page
+#from django.db.models.signals import post_save, post_delete
+#from django.dispatch import receiver
 
 from .models import User, Recipe, Comment
 
@@ -86,9 +86,6 @@ def register(request):
     else:
         return render(request, "cookbook/register.html")
 
-# cache version number
-ALLRECIPES_CACHE_VERSION = 1
-MYRECIPES_CACHE_VERSION = 1
 
 def index(request):
     """
@@ -132,7 +129,10 @@ def add_recipe(request):
             image = "images/no_image.jpeg"
 
         # add ingredients and directions
-        ingredients = list(request.POST.get("ingredients").split(","))
+        ingredients = request.POST.get("ingredients")
+
+        if ingredients is not None:
+            ingredients = list(request.POST.get("ingredients").split(","))
         ingredients_str = ''
         for ingredient in ingredients:
             ingredients_str += ingredient + ","
@@ -153,6 +153,7 @@ def add_recipe(request):
         # try to create recipie
         try:
             recipe.save()
+            return HttpResponseRedirect("/")
 
         # catch issues with incomplete model fields
         except IntegrityError:
@@ -160,17 +161,11 @@ def add_recipe(request):
             error_message = "Some required fields are missing. Please fill out all the required fields."
             return JsonResponse({"error": error_message}, status=400)
 
-        ALLRECIPES_CACHE_VERSION += 1
-        MYRECIPES_CACHE_VERSION += 1
-        HttpResponseRedirect("index")
-
     # For other request methods (e.g., GET, PUT, DELETE, etc.), return HTTP 405 Method Not Allowed
     error_message = "Only POST method is allowed for this URL."
     return HttpResponseNotAllowed(permitted_methods=["POST"], content=error_message)
 
 
-# Cache the view for 10 min, if the version number changes due to a db update, re-cache the solution
-@cache_page(60*10, key_prefix="all_recipes_v" + str(ALLRECIPES_CACHE_VERSION))  
 def all_recipes(request):
     """
     Retrieves all recipes from the database, sorted by the timestamp in
@@ -208,7 +203,6 @@ def all_recipes(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
-@cache_page(60*10)    # cache the view for 10 min.  if recipe is updated, clear the cache
 def get_recipe(request, name):
     """
     Retrieves a specific recipe from the database based on its title
@@ -290,12 +284,6 @@ def search_recipes(request):
     try:
         data = json.loads(request.body)
         search = data.get("search")
-
-        # check if the search results are already cached
-        cache_key = f"search_recipes_{search}"
-        cached_results = cache.get(cache_key)
-        if cached_results is not None:
-            return JsonResponse({"matched_recipes": cached_results})
         
         recipes = Recipe.objects.all()
         matched_recipes = set()
@@ -320,10 +308,6 @@ def search_recipes(request):
                 if search_list[0] in recipe.title:
                     matched_recipes.add(recipe.title)
 
-        # cache the search results for 5 minutes (you can adjust the cache timeout as needed)
-        cache_timeout = 60 * 5
-        cache.set(cache_key, list(matched_recipes), cache_timeout)
-
         return JsonResponse({"matched_recipes": list(matched_recipes)})
 
     # return error code if invalid JSON data
@@ -335,24 +319,7 @@ def search_recipes(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
-CACHE_KEY_PREFIX1 = "search_recipes_"
-CACHE_KEY_PREFIX2 = "cuisine"
-
-
-@receiver(post_save, sender=Recipe)
-@receiver(post_delete, sender=Recipe)
-def invalidate_search_recipes_cache(sender, instance, **kwargs):
-    """
-    Signal receiver function to invalidate the cache for the search_recipes view
-    when a Recipe instance is saved (updated) or deleted.
-    """
-    # The cache key is based on the search parameter, so we need to clear all cached search results.
-    cache_keys = [key for key in cache.keys() if key.startswith(CACHE_KEY_PREFIX1) or key.startswith(CACHE_KEY_PREFIX2)]
-    cache.delete_many(cache_keys)
-
-
 @login_required
-@cache_page(60*10, key_prefix="my_recipes_v" + str(MYRECIPES_CACHE_VERSION))
 def my_recipes(request):
     """
     Allows authenticated users to retrieve recipes they posted. The recipes
@@ -398,23 +365,12 @@ def cuisines(request):
     """
     # try loading cuisines
     try:
-
-        # check if the search results are already cached
-        cache_key = "cuisines"
-        cached_results = cache.get(cache_key)
-        if cached_results is not None:
-            return JsonResponse({"list": cached_results})
-        
         recipes = Recipe.objects.all()
         cuisines_list = set()
 
         for recipe in recipes:
             cuisines_list.add(recipe.category)
 
-        # cache the search results for 5 minutes
-        cache_timeout = 60 * 5
-        cache.set(cache_key, list(cuisines_list), cache_timeout)
-        
         return JsonResponse({"list": list(cuisines_list)})
 
     # return error code if any other exception occurs
@@ -431,12 +387,6 @@ def cuisine_recipes(request, cuisine):
     """
     # try loading cuisine recipes
     try:
-        # check if the search results are already cached
-        cache_key = "cuisine_recs"
-        cached_results = cache.get(cache_key)
-        if cached_results is not None:
-            return JsonResponse({"cuisine_recipes": [recipe.serialize() for recipe in cached_results]})    
-        
         recipes = Recipe.objects.filter(category=cuisine)
         recipes = recipes.order_by("-timestamp").all()
 
@@ -451,10 +401,6 @@ def cuisine_recipes(request, cuisine):
 
         # return appropriate recipes
         recipes = recipes[start:end]
-
-        # cache the search results for 5 minutes
-        cache_timeout = 60 * 5
-        cache.set(cache_key, recipes, cache_timeout)
 
         # .serialize() creates a text string for json object
         return JsonResponse({"cuisine_recipes": [recipe.serialize() for recipe in recipes]})
