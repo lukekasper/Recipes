@@ -16,7 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#notes-button').addEventListener('click', add_note);
 
     // run when form is submitted
-    document.querySelector('#new_recipe-button').addEventListener('click', new_recipe);
+    document.querySelector('#new_recipe-button').addEventListener('click', () => {
+
+          new_recipe();
+    });
 });
 
 function add_ingredient() {
@@ -174,7 +177,6 @@ function add_note() {
     }
 }
 
-// POST a new recipie to backend
 function new_recipe() {
 
     // get info from input field
@@ -187,49 +189,18 @@ function new_recipe() {
     formData.append('instructions', JSON.stringify(directions_list));
     formData.append('notes', JSON.stringify(notes_list));
 
-    // send POST request to /add_recipe API and display error message (if one exists)
-    let error_p = document.querySelector("#error_message");
-    let return_message = postFormData('/add_recipe', formData);
-    error_p.innerHTML = return_message;
-}
+    const options = {
+        method: 'POST',
+        body: formData
+    };
 
-////////////////////////// Asynchronous API call //////////////////////////
-async function postFormData(url, data) {
-    let errorMessage = "";
-    try {
-        // Get the CSRF token value from the cookie
-        //const csrfToken = getCookie('csrftoken');
+    // send POST request to /new_post API
+    fetch('/add_recipe', options)
 
-        const response = await fetch(url, {
-            method: 'POST',
-//            headers: {
-////                'X-CSRFToken': csrfToken,
-//                'Content-Type': 'application/json'
-//            },
-            body: data,
-        });
+    .then(response => response.json())
+    .then(response => {
+        console.log(response);
+    });
 
-        // used to handle HTTP Error Responses
-        if (!response.ok) {
-            // If the response is not OK, handle the error
-            const errorMessage = await response.text();
-            console.error('Error:', errorMessage);
-        }
-        console.log('working post recipe');
-
-        return errorMessage
-    }
-    catch (error) {
-        // Handle the error that occurred during the asynchronous operation
-        console.error('Network error:', error);
-        errorMessage = error
-        return error_message
-    }
-}
-
-// Helper function to get the CSRF token value from the cookie
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
+    return false;
 }

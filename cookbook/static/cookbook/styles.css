@@ -1,13 +1,3 @@
-/* Account Login */
-#login-page {
-    margin: 20px;
-}
-
-#account_message{
-    margin-top: 15px;
-}
-
-/* Make New Recipe */
 h3 {
     padding: 15px;
     margin-bottom: 20px;
@@ -49,6 +39,28 @@ h3 {
     width: 380px;
 }
 
+#recipes-title {
+    float: left;
+    width: 50%;
+}
+
+#new_recipe-link {
+    float: right;
+    margin-right: 40px;
+    font-size: 18px;
+    margin-top: 40px;
+}
+
+#new_recipe-button {
+    margin-top: 60px;
+    margin-left: 20px;
+    margin-bottom: 40px;
+}
+
+#ingredients_list {
+    padding-left: 25px;
+}
+
 #list_1 {
     float: left;
     width: 275px;
@@ -63,10 +75,6 @@ h3 {
     position: relative;
     padding: 25px;
     width: 100%;
-}
-
-#ingredients_list {
-    padding-left: 25px;
 }
 
 #instructions-button {
@@ -93,7 +101,6 @@ h3 {
     height: 140px;
 }
 
-
 #ingredients-button {
     position: absolute;
     left: 435px;
@@ -119,24 +126,124 @@ h3 {
     width: 380px;
 }
 
+.notes {
+    width: 100%;
+    margin: 25px;
+}
 
-/* Recipes Home Page */
-#recipes-title {
+.title {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.category {
+    margin: 0px;
+    font-size: 14px;
+}
+
+.timestamp {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #D0D0D0;
+}
+
+.info-div {
+    height: 220px;
+    padding-left: 30px;
+}
+
+.outer-div {
+    display: flex;
+    height: 220px;
+    width: 60%;
     float: left;
-    width: 50%;
 }
 
-#new_recipe-link {
-    float: right;
-    margin-right: 40px;
-    font-size: 18px;
-    margin-top: 40px;
-}
-
-#new_recipe-button {
-    margin-top: 60px;
+.image-div {
+    float: left;
+    display: flex;
     margin-left: 20px;
-    margin-bottom: 40px;
+    width: 250px;
+    height: 220px;
+    text-align: center;
+    justify-content: center;
+    padding-bottom: 15px;
+}
+
+.checked {
+    color: orange;
+}
+
+hr {
+    clear: both;
+}
+
+.rating {
+    padding-left: 5px;
+}
+
+.num_ratings{
+    padding-left: 5px;
+    color: LightGray;
+}
+
+/* Style the search box inside the navigation bar */
+#search_bar {
+    position: absolute;
+    font-size: 17px;
+    margin-top: 4px;
+    border: solid;
+    right: 12px;
+    width: 300px;
+    background-color: white;
+    border-width: 1px;
+    border-color: LightGray;
+    border-radius: 15px;
+    display: flex;
+}
+
+#nav_bar {
+    width: 100vw;
+}
+
+.search-button img {
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
+    background-color: white;
+}
+
+#search-button {
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+.matched_recipe-list {
+    padding-top: 10px;
+    font-family: 'Courier New';
+    font-size: 18px;
+}
+
+.search_header {
+    font-style: italic;
+}
+
+.list_div {
+    display: flex;
+    float: left;
+    width: 45%;
+}
+
+h4 {
+    margin: 25px;
+}
+
+.nav-link {
+    margin-right: 18px;
+    margin-left: 18px;
 }
 
 .comments-button {
@@ -212,76 +319,6 @@ h3 {
     padding-top: 5px;
 }
 
-.notes {
-    width: 100%;
-    margin: 25px;
-}
-
-.title {
-    font-weight: bold;
-    font-size: 16px;
-    margin-bottom: 15px;
-}
-
-.category {
-    margin: 0px;
-    font-size: 14px;
-}
-
-.timestamp {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #D0D0D0;
-}
-
-.info-div {
-    height: 220px;
-    padding-left: 30px;
-}
-
-.outer-div {
-    display: flex;
-    height: 220px;
-    width: 60%;
-    float: left;
-}
-
-.image-div {
-    float: left;
-    display: flex;
-    margin-left: 20px;
-    width: 250px;
-    height: 220px;
-    text-align: center;
-    justify-content: center;
-    padding-bottom: 15px;
-}
-
-.checked {
-    color: orange;
-}
-
-hr {
-    clear: both;
-}
-
-.rating {
-    padding-left: 5px;
-}
-
-.num_ratings {
-    padding-left: 5px;
-    color: LightGray;
-}
-
-.error {
-    font-size: 15px;
-    color: red;
-}
-
-
-/* Recipe Info Page */
 #recipe-title {
     text-align: center;
     padding-top: 15px;
@@ -396,88 +433,4 @@ hr {
 #favorites-button {
     margin-bottom: 30px;
     margin-left: 30px;
-}
-
-#dir_div {
-    padding-bottom: 10px;
-}
-
-#edit-button_div {
-    margin-top: 120px;
-    margin-left: 350px;
-    margin-right: 30px;
-}
-
-#edit-button {
-    position: relative;
-    left: 42%;
-    height: 45px;
-    width: 140px;
-    font-size: 18px;
-}
-
-#edit_message {
-    float: right;
-    color: red;
-    font-size: 16px;
-}
-
-
-/* Style the search box inside the navigation bar */
-#search_bar {
-    position: absolute;
-    font-size: 17px;
-    margin-top: 4px;
-    border: solid;
-    right: 12px;
-    width: 300px;
-    background-color: white;
-    border-width: 1px;
-    border-color: LightGray;
-    border-radius: 15px;
-    display: flex;
-}
-
-#nav_bar {
-    width: 100vw;
-}
-
-.search-button img {
-    width: 20px;
-    height: 20px;
-    object-fit: cover;
-    background-color: white;
-}
-
-#search-button {
-    background: transparent;
-    border: none;
-    outline: none;
-}
-
-
-/* Matched Recipes View */
-.matched_recipe-list {
-    padding-top: 10px;
-    font-family: 'Courier New';
-    font-size: 18px;
-}
-
-.search_header {
-    font-style: italic;
-}
-
-.list_div {
-    display: flex;
-    float: left;
-    width: 45%;
-}
-
-h4 {
-    margin: 25px;
-}
-
-.nav-link {
-    margin-right: 18px;
-    margin-left: 18px;
 }

@@ -1,29 +1,18 @@
 import json
+import re
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseNotAllowed, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.core.exceptions import ObjectDoesNotExist
-#from django.core.cache import cache
-#from django.views.decorators.cache import cache_page
-#from django.db.models.signals import post_save, post_delete
-#from django.dispatch import receiver
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Recipe, Comment
 
 
 def login_view(request):
-    """
-    Handles the user login process. If the request method is POST, it attempts
-    to authenticate the user using the provided username and password. If the authentication
-    is successful, the user is logged in and redirected to the "index" page. If the
-    authentication fails, the login page is re-rendered with an error message.
-
-    If the request method is not POST, it simply renders the login page.
-    """
     if request.method == "POST":
 
         # Attempt to sign user in
@@ -44,23 +33,11 @@ def login_view(request):
 
 
 def logout_view(request):
-    """
-    Logs out the currently authenticated user by using the Django built-in
-    `logout` function. After logging out, the user is redirected to the "index" page.
-    """
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
 
 def register(request):
-    """
-    Handles the user registration process. If the request method is POST, it
-    attempts to create a new user based on the provided username, email, and password. The
-    password must match the password confirmation for successful registration. If the
-    registration is successful, the user is logged in and redirected to the "index" page.
-
-    If the request method is not POST, it simply renders the registration page.
-    """
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
@@ -88,31 +65,19 @@ def register(request):
 
 
 def index(request):
-    """
-    Renders the index template (Home page).
-    """
     return render(request, "cookbook/index.html")
 
 
+@csrf_exempt
 @login_required
 def new_recipe(request):
-    """
-    Renders the "new_recipe.html" template, which displays the form for
-    creating a new recipe. The view is protected by the `@login_required` decorator, which
-    ensures that only authenticated users can access the form.
-    """
     return render(request, "cookbook/new_recipe.html")
 
 
+@csrf_exempt
 @login_required
 def add_recipe(request):
-    """
-    Allows authenticated users to add a new recipe to the cookbook by
-    submitting a POST request. The recipe information, including title, category, cooktime,
-    image, ingredients, directions, and optional notes, is extracted from the request data.
-    A new `Recipe` model instance is created and saved to the database with the provided
-    information.
-    """
+
     # create recipe from POST info
     if request.method == "POST":
 
@@ -128,163 +93,91 @@ def add_recipe(request):
         else:
             image = "images/no_image.jpeg"
 
-        # add ingredients and directions
-        ingredients = request.POST.get("ingredients")
-
-        if ingredients is not None:
-            ingredients = list(request.POST.get("ingredients").split(","))
-        ingredients_str = ''
-        for ingredient in ingredients:
-            ingredients_str += ingredient + ","
-        ingredients_str = ingredients_str[:-1]
-        directions = request.POST.get("instructions")
-
         # create recipe
-        recipe = Recipe(user=user, title=title, ingredients=ingredients_str, instructions=directions, category=category,
-                        image=image, cooktime=cooktime)
+        recipe = Recipe(user=user, title=title, category=category, image=image, cooktime=cooktime)
 
-        # add notes to recipe model if notes were uploaded, otherwise leave blank
+        # add directions and notes to recipe model (if notes were uploaded, otherwise leave blank)
+        directions = request.POST.get("instructions")
         if request.POST.get("notes", False):
             notes = request.POST.get("notes")
         else:
             notes = ''
+
+        # see if any of the ingredients are a sub-recipe, if so add it as one and remove from ingredients
+        ingredients = list(request.POST.get("ingredients").split(","))
+        ingredients_str = ''
+        for ingredient in ingredients:
+            if Recipe.objects.filter(title=ingredient):
+                sub_rec = Recipe.objects.get(title=ingredient)
+                ingredients.remove(ingredient)
+                recipe.sub_recipe.add(sub_rec)
+            else:
+                ingredients_str += ingredient + ","
+        ingredients_str = ingredients_str[:-1]
+
+        # update recipe details
+        recipe.ingredients = ingredients_str
+        recipe.instructions = directions
         recipe.note = notes
+        recipe.save()
 
-        # try to create recipie
-        try:
-            recipe.save()
-            return HttpResponseRedirect("/")
+        HttpResponseRedirect("index")
 
-        # catch issues with incomplete model fields
-        except IntegrityError:
-            # Handle the IntegrityError
-            error_message = "Some required fields are missing. Please fill out all the required fields."
-            return JsonResponse({"error": error_message}, status=400)
-
-    # For other request methods (e.g., GET, PUT, DELETE, etc.), return HTTP 405 Method Not Allowed
-    error_message = "Only POST method is allowed for this URL."
-    return HttpResponseNotAllowed(permitted_methods=["POST"], content=error_message)
+    return JsonResponse({"message": "Post Error."}, status=404)
 
 
 def all_recipes(request):
-    """
-    Retrieves all recipes from the database, sorted by the timestamp in
-    descending order. The recipes are then serialized into a JSON response, containing the
-    start and end points of the requested recipe list. The start and end points are
-    determined by the query parameters 'start' and 'end' in the request and used to paginate the response.
-    All recipes query is cached for 10 min.
-    """
-    try:
-        recipes = Recipe.objects.all()
-        recipes = recipes.order_by("-timestamp").all()
-        recipes_list = [recipe.serialize() for recipe in recipes]
 
-        # set start and end points
-        start = int(request.GET.get("start") or 0)
-        end = int(request.GET.get("end") or (len(recipes) - 1))
+    recipes = Recipe.objects.all()
+    recipes = recipes.order_by("-timestamp").all()
 
-        if start > len(recipes) - 1:
-            recipes_list = []
-        elif end > len(recipes) - 1:
-            end = len(recipes) - 1
-            recipes_list = recipes_list[start:end + 1]
-        else:
-            recipes_list = recipes_list[start:end + 1]
-
-        # .serialize() creates a text string for json object
-        return JsonResponse({"recipes": recipes_list})
-
-    # Handle invalid input (e.g., non-integer values for start/end)
-    except ValueError:
-        return JsonResponse({"error": "Invalid input parameters."}, status=400)
-
-    # return error code if any other exception occurs
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    # .serialize() creates a text string for json object
+    return JsonResponse({"recipes": [recipe.serialize() for recipe in recipes]})
 
 
 def get_recipe(request, name):
-    """
-    Retrieves a specific recipe from the database based on its title
-    (name). The recipe is serialized into a JSON response, and if the user is authenticated,
-    a "favorite_flag" indicating whether the recipe is in the user's favorites list is also
-    included in the response.
-    """
+
     # get requested recipe and set favorite flag
-    try:
-        recipe = Recipe.objects.get(title=name)
-        favorite_flag = "None"
+    recipe = Recipe.objects.get(title=name)
+    favorite_flag = "None"
 
-        # if the recipe is in the user's list of favorites, set favorite flag to True
-        if request.user.is_authenticated:
-            if recipe in request.user.favorites.all():
-                favorite_flag = "True"
-            else:
-                favorite_flag = "False"
+    # if the recipe is in the user's list of favorites, set favorite flag to True
+    if request.user.is_authenticated:
+        if recipe in request.user.favorites.all():
+            favorite_flag = "True"
+        else:
+            favorite_flag = "False"
 
-        return JsonResponse({"recipe": recipe.serialize(), "favorite_flag": favorite_flag})
-
-    # return error code if any other exception occurs
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"recipe": recipe.serialize(), "favorite_flag": favorite_flag})
 
 
+@csrf_exempt
 @login_required
 def update_rating(request, name):
-    """
-    Allows authenticated users to update the rating of a specific recipe
-    by submitting a PUT request. The request should include a JSON object containing the
-    "rating" attribute, which represents the new rating value (an integer between 1 and 5).
-    """
-    # ensure request was a PUT
-    if request.method == "PUT":
 
-        # get recipe info and convert user ratings into a dictionary
-        recipe = Recipe.objects.get(title=name)
+    # get recipe info and convert user ratings into a dictionary
+    recipe = Recipe.objects.get(title=name)
+    rating_dict = recipe.user_rating_dict()
+    signed_user = request.user.username
+    data = json.loads(request.body)
 
-        try:
-            rating_dict = recipe.user_rating_dict()
-            signed_user = request.user.username
-            data = json.loads(request.body)
-            rating = data.get("rating")
+    # either add new entry or update existing entry and save
+    rating_dict[signed_user] = data.get("rating")
+    recipe.user_rating = str(rating_dict)
+    recipe.save()
 
-            # check if rating is an int from 1-5
-            if not isinstance(rating, int) or rating < 1 or rating > 5:
-                return JsonResponse({"error": "Invalid rating. Rating must be an integer between 1 and 5."}, status=400)
-
-            # either add new entry or update existing entry and save
-            rating_dict[signed_user] = data.get("rating")
-            recipe.user_rating = str(rating_dict)
-
-            recipe.save()
-            return JsonResponse({"avg_rating": recipe.avg_rating(), "num_ratings": recipe.num_ratings()})
-
-        # return error code if invalid JSON data
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON data in the request body."}, status=400)
-
-        # return error code if any other exception occurs
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    error_message = "Only PUT method is allowed for this URL."
-    return HttpResponseNotAllowed(permitted_methods=["PUT"], content=error_message)
+    return JsonResponse({"avg_rating": recipe.avg_rating(), "num_ratings": recipe.num_ratings()})
 
 
+@csrf_exempt
 @login_required
 def search_recipes(request):
-    """
-    Allows authenticated users to search for recipes that contain specific
-    ingredients or have titles that match the search query. The search query is provided in
-    the request body as a JSON object with the "search" attribute, which contains a comma-
-    separated list of ingredients or a single recipe title.
-    """
+
     # get ingredients list and split into individual ingredients
-    # try reading the json data
-    try:
+    if request.method == "POST":
         data = json.loads(request.body)
         search = data.get("search")
-        
+
         recipes = Recipe.objects.all()
         matched_recipes = set()
 
@@ -310,171 +203,76 @@ def search_recipes(request):
 
         return JsonResponse({"matched_recipes": list(matched_recipes)})
 
-    # return error code if invalid JSON data
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON data in the request body."}, status=400)
-
-    # return error code if any other exception occurs
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"message": "Post Error."}, status=404)
 
 
+@csrf_exempt
 @login_required
 def my_recipes(request):
-    """
-    Allows authenticated users to retrieve recipes they posted. The recipes
-    are filtered based on the signed-in user and are ordered by the timestamp of their
-    creation. The view returns a JSON response containing the requested recipes.  The start and end
-    parameters in the query request are used to paginate the response.
-    """
-    try:
-        # get signed-in user recipes posted by that user and order by post time
-        user = request.user
-        user_recipes = Recipe.objects.filter(user=user)
-        user_recipes = user_recipes.order_by("-timestamp").all()
 
-        # set start and end points
-        start = int(request.GET.get("start"))
-        end = start + 10
-        total_recipes = len(user_recipes)
+    # get signed-in user recipes posted by that user and order by post time
+    user = request.user
+    user_recipes = Recipe.objects.filter(user=user)
+    user_recipes = user_recipes.order_by("-timestamp").all()
 
-        # Clamp start and end to valid values
-        start = max(min(start, total_recipes - 1), 0)
-        end = max(min(end, total_recipes - 1), 0)
-
-        # return appropriate recipes
-        user_recipes = user_recipes[start:end]
-
-        # .serialize() creates a text string for json object
-        return JsonResponse({"user_recipes": [recipe.serialize() for recipe in user_recipes]})
-
-    except ValueError:
-        # Handle invalid input (e.g., non-integer values for start/end)
-        return JsonResponse({"error": "Invalid input parameters."}, status=400)
-
-    # return error code if any other exception occurs
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    # .serialize() creates a text string for json object
+    return JsonResponse({"user_recipes": [recipe.serialize() for recipe in user_recipes]})
 
 
 def cuisines(request):
-    """
-    Retrieves a list of unique cuisines from the database. 
-    It goes through all the recipes and extracts their categories (cuisines).
-    The unique categories are collected in a list and returned as a JSON response.
-    """
-    # try loading cuisines
-    try:
-        recipes = Recipe.objects.all()
-        cuisines_list = set()
 
-        for recipe in recipes:
-            cuisines_list.add(recipe.category)
+    recipes = Recipe.objects.all()
+    cuisines_list = set()
 
-        return JsonResponse({"list": list(cuisines_list)})
+    for recipe in recipes:
+        cuisines_list.add(recipe.category)
 
-    # return error code if any other exception occurs
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"list": list(cuisines_list)})
 
 
 def cuisine_recipes(request, cuisine):
-    """
-    Retrieves all of the recipes of a specific cuisine from the database. The cuisine
-    is specified in the URL as a parameter. The recipes are ordered by their timestamp in descending order. 
-    The view returns a JSON response containing the requested recipes.
-    The start and end parameters supplied in the url are used to paginate the response.
-    """
-    # try loading cuisine recipes
-    try:
-        recipes = Recipe.objects.filter(category=cuisine)
-        recipes = recipes.order_by("-timestamp").all()
 
-        # set start and end points
-        start = int(request.GET.get("start"))
-        end = start + 10
-        if start > len(recipes) - 1:
-            start = len(recipes) - 1
-            end = len(recipes) - 1
-        elif end > len(recipes) - 1:
-            end = len(recipes) - 1
+    recipes = Recipe.objects.filter(category=cuisine)
+    recipes = recipes.order_by("-timestamp").all()
 
-        # return appropriate recipes
-        recipes = recipes[start:end]
-
-        # .serialize() creates a text string for json object
-        return JsonResponse({"cuisine_recipes": [recipe.serialize() for recipe in recipes]})
-
-    # return error code if any other exception occurs
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    # .serialize() creates a text string for json object
+    return JsonResponse({"cuisine_recipes": [recipe.serialize() for recipe in recipes]})
 
 
 @login_required
 def favorites(request):
-    """
-    Allows authenticated users to retrieve the recipes they have
-    favorited. The recipes are obtained from the "favorites" relationship of the current
-    user. The favorites are then serialized into a JSON response and returned.
-    """
-    # try loading favorite recipes
-    try:
-        # get recipes favorited by signed in user
-        recipes = request.user.favorites.all()
 
-        # .serialize() creates a text string for json object
-        return JsonResponse({"list": [recipe.serialize() for recipe in recipes]})
+    # get recipes favorited by signed in user
+    recipes = request.user.favorites.all()
 
-    # return error code if any other exception occurs
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    # .serialize() creates a text string for json object
+    return JsonResponse({"list": [recipe.serialize() for recipe in recipes]})
 
 
 @login_required
+@csrf_exempt
 def update_favorites(request, title):
-    """
-    Allows authenticated users to update the favorite status of a recipe.
-    The recipe's title is specified in the URL as a parameter, and the view checks if the
-    request method is a PUT request. If the recipe is already in the user's favorites, it
-    will be removed from the favorites list. If it is not in the favorites, it will be added.
-    The updated favorite status is returned as a JSON response.
-    """
-    # ensure method was a PUT request
-    if request.method == "PUT":
 
-        # try to get signed-in user, recipe to update, and flag from PUT request
-        try:
-            user = request.user
-            recipe = Recipe.objects.get(title=title)
+    # get signed-in user, recipe to update, and flag from PUT request
+    user = request.user
+    recipe = Recipe.objects.get(title=title)
 
-            # update user's favorites according to flag logic
-            if recipe in user.favorites.all():
-                user.favorites.remove(recipe)
-                flag = "False"
-            else:
-                user.favorites.add(recipe)
-                flag = "True"
-            user.save()
+    # update user's favorites according to flag logic
+    if recipe in user.favorites.all():
+        user.favorites.remove(recipe)
+        flag = "False"
+    else:
+        user.favorites.add(recipe)
+        flag = "True"
+    user.save()
 
-            return JsonResponse({"flag": flag})
-
-        # return error code if any other exception occurs
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    error_message = "Only PUT method is allowed for this URL."
-    return HttpResponseNotAllowed(permitted_methods=["PUT"], content=error_message)
+    return JsonResponse({"flag": flag})
 
 
 @login_required
+@csrf_exempt
 def add_comment(request, title):
-    """
-    Allows authenticated users to add a new comment to a specific recipe.
-    The recipe's title is specified in the URL as a parameter, and the view checks if the
-    request method is a POST request. If so, the comment text is extracted from the request's
-    JSON data, and a new `Comment` object is created and saved to the database. The JSON
-    response contains the serialized representation of the newly created comment.
-    """
+
     if request.method == "POST":
 
         # get recipe, user, and comment info
@@ -494,29 +292,10 @@ def add_comment(request, title):
 
 @login_required
 def remove_comment(request, id):
-    """
-    Allows authenticated users to remove their own comments from a specific
-    recipe. The comment to be removed is specified by its unique identifier (ID) provided as
-    a URL parameter. The view checks if the request method is a POST request and if the
-    authenticated user is the author of the comment. If so, the comment is deleted from the
-    database. The view returns a JSON response indicating the status of the comment removal.
-    """
+
     # get comment by id and delete from database
-    try:
-        if Comment.objects.get(id=id):
-            comment = Comment.objects.get(id=id)
-            if comment.user != request.user:  # Assuming you have an 'author' field in the Comment model
-                return JsonResponse({"message": "You are not authorized to delete this comment."}, status=403)
-            comment.delete()
-        return JsonResponse({"message": "Comment Removed."}, status=204)
+    if Comment.objects.get(id=id):
+        comment = Comment.objects.get(id=id)
+        comment.delete()
 
-    # return error if comment does not exist
-    except ObjectDoesNotExist:
-        return JsonResponse({"message": "Comment not found."}, status=404)
-
-    # return error code if any other exception occurs
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
-
-
-
+    return JsonResponse({"message": "Comment Removed."}, status=200)

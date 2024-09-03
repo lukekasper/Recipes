@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,15 +19,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret! (contained in the secret.env file)
-# SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') 
-
-SECRET_KEY = '1234'
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-&l9i%^s3^l(1l*u+op7)hl!*t$u^q%@y_b7*!l8lma#-a$bxoo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
 
 # Application definition
 
@@ -46,13 +44,10 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.cache.UpdateCacheMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'Recipes.urls'
@@ -79,32 +74,6 @@ WSGI_APPLICATION = 'Recipes.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# Get the admin username and password from environment variables, or use default values
-ADMIN_USER = os.environ.get('MYSQL_USER', 'default_admin')
-ADMIN_PASSWORD = os.environ.get('MYSQL_PASSWORD', 'default_password')
-
-ADMINS = [
-    (ADMIN_USER, ADMIN_PASSWORD),
-]
-
-# Set the default superuser credentials if they are not provided via environment variables
-if not os.environ.get('DJANGO_SUPERUSER_USERNAME'):
-    os.environ['DJANGO_SUPERUSER_USERNAME'] = ADMIN_USER
-if not os.environ.get('DJANGO_SUPERUSER_PASSWORD'):
-    os.environ['DJANGO_SUPERUSER_PASSWORD'] = ADMIN_PASSWORD
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'recipies_db',
-#         'USER': ADMIN_USER,
-#         'PASSWORD': ADMIN_PASSWORD,
-#         'HOST': 'mysql',  # Use the service name of the MySQL container
-#         'PORT': '3306',  # Use the default MySQL port unless you've specified a different one
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -113,21 +82,6 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = "cookbook.User"
-
-
-# Caches
-# Choose the cache backend to use (memcached)
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#         'LOCATION': '127.0.0.1:11211',  # Example: Memcached server address
-#     }
-# }
-
-# Set the cache timeout (in seconds) for static files
-# CACHE_MIDDLEWARE_SECONDS = 600  # 10 min
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

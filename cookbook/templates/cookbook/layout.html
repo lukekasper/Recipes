@@ -14,7 +14,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="#">House Recipes</a>
             <div>
-                <ul class="navbar-nav mr-auto" id="nav_bar">
+                <ul class="navbar-nav mr-auto=" id="nav_bar">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" id="usrname" href="#"><strong id="name">{{ user.username }}</strong></a>
@@ -47,7 +47,6 @@
                         <button class="search-button" id="search-button">
                             <img src="https://www.kindacode.com/wp-content/uploads/2020/12/search.png">
                         </button>
-                        <p id="search_error" class="error"></p>
                     </li>
                 </ul>
             </div>
