@@ -21,7 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret! (contained in the secret.env file)
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') 
+# SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') 
+
+SECRET_KEY = '1234'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -92,14 +94,21 @@ if not os.environ.get('DJANGO_SUPERUSER_PASSWORD'):
     os.environ['DJANGO_SUPERUSER_PASSWORD'] = ADMIN_PASSWORD
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'recipies_db',
+#         'USER': ADMIN_USER,
+#         'PASSWORD': ADMIN_PASSWORD,
+#         'HOST': 'mysql',  # Use the service name of the MySQL container
+#         'PORT': '3306',  # Use the default MySQL port unless you've specified a different one
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'recipies_db',
-        'USER': ADMIN_USER,
-        'PASSWORD': ADMIN_PASSWORD,
-        'HOST': 'mysql',  # Use the service name of the MySQL container
-        'PORT': '3306',  # Use the default MySQL port unless you've specified a different one
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -108,15 +117,15 @@ AUTH_USER_MODEL = "cookbook.User"
 
 # Caches
 # Choose the cache backend to use (memcached)
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',  # Example: Memcached server address
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#         'LOCATION': '127.0.0.1:11211',  # Example: Memcached server address
+#     }
+# }
 
 # Set the cache timeout (in seconds) for static files
-CACHE_MIDDLEWARE_SECONDS = 600  # 10 min
+# CACHE_MIDDLEWARE_SECONDS = 600  # 10 min
 
 
 
