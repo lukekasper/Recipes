@@ -452,6 +452,7 @@ def favorites(request):
 
 
 @login_required
+@csrf_exempt
 def update_favorites(request, title):
     """
     Allows authenticated users to update the favorite status of a recipe.
