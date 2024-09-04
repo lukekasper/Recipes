@@ -319,11 +319,27 @@ h4 {
     padding-top: 5px;
 }
 
+#title-container {
+    display: flex;
+    justify-content: center;
+}
+
+#delete-recipe {
+    height: 35px;
+    margin-right: 70px;
+    margin-top: 20px;
+}
+
 #recipe-title {
     text-align: center;
     padding-top: 15px;
     font-weight: bold;
-    padding-left: 250px;
+}
+
+#modify-recipe {
+    height: 35px;
+    margin-left: 70px;
+    margin-top: 20px;
 }
 
 #recipe-image-div {

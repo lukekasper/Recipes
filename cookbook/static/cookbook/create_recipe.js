@@ -177,7 +177,7 @@ function add_note() {
     }
 }
 
-function new_recipe() {
+async function new_recipe() {
 
     // get info from input field
     let formData = new FormData();
@@ -194,19 +194,21 @@ function new_recipe() {
         body: formData
     };
 
-    try {
-        const response = await fetch('/add_recipe', options);
+    // send POST request to /new_post API
+    fetch('/add_recipe', options)
 
+    .then(response => {
         if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
+          throw new Error('Error: ' + response.statusText);
         }
-        const data = await response.json();
-
-        console.log('Post Successful!');
-    }
-    catch (error) {
-        console.error(error.message);
-    }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data.message);
+        if (data.message === "Recipe added.") {
+            window.location.href = "/";
+        }
+    })
 
     return false;
 }

@@ -8,20 +8,20 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('#usrname').addEventListener('click', () => {
             let usrname = document.querySelector('#name').innerHTML;
             load_recipes(user=usrname, cuisine='');
-            history.pushState({}, '', usrname);
+            history.pushState({}, '', "/" + usrname);
         });
     }
 
     // run when cuisines is clicked
     document.querySelector('#Cuisines-link').addEventListener('click', () => {
         generate_page('Cuisines', '/cuisines', '#cuisines');
-        history.pushState({}, '', "categories");
+        history.pushState({}, '', "/categories");
     });
 
     // run when favorites is clicked
     document.querySelector('#Favoirtes-link').addEventListener('click', () => {
         generate_page('My Favorites', '/favorites', '#favorites');
-        history.pushState({}, '', "favorites");
+        history.pushState({}, '', "/favorites");
     });
 
     // run when search icon is clicked
@@ -46,7 +46,12 @@ function generate_page(title, api_path, id) {
 
      // send API request to get cuisine info
     fetch(`${api_path}`)
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(data => {
 
         // show cuisines view and hide all others
@@ -92,6 +97,9 @@ function generate_page(title, api_path, id) {
             }
         });
     })
+    .catch(error => {
+        console.error('Network Error: ', error);
+    });
 }
 
 function load_recipes(user, cuisine) {
@@ -364,9 +372,18 @@ function remove_comment(comment, comment_p) {
 
     // send API request to remove comment from backend
     fetch(`/remove_comment/${comment.id}`)
+    .then(response => {
+        if (!response.ok) {
+          throw new Error('Error: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(() => {
         comment_p.remove();
     })
+    .catch(error => {
+        console.error('Netwrok Error: ', error);
+    });
 }
 
 // update comment model on backend
@@ -378,11 +395,19 @@ function add_comment(comment_txt, title) {
             comment: `${comment_txt}`
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(data => {
         make_comment_html(data.comment, title);
         document.querySelector('#add_comment-box_'+title).value = '';
     })
+    .catch(error => {
+        console.error('Netwrok Error: ', error);
+    });
 }
 
 // make standard html text element
@@ -414,12 +439,20 @@ function update_rating(title, i) {
             rating: i+1
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(data => {
 
         // update avg rating html for selected recipe and reload recipes
         document.querySelector('#'+title+'_rating').innerHTML = data.avg_rating;
         load_recipes(user='', cuisine='');
+    })
+    .catch(error => {
+        console.error('Netwrok Error: ', error);
     });
 }
 
@@ -469,7 +502,12 @@ function load_recipe(title) {
 
     // send API request to get recipe info
     fetch('/recipe_page/'+title)
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+          throw new Error('Error: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(data => {
 
         document.querySelector('#recipe-image-div').innerHTML = '';
@@ -479,8 +517,24 @@ function load_recipe(title) {
         // create recipe html
         const image = make_image_html(data.recipe.image, 'recipe-image');
 
-        // add title to page header
+        // add title to page header and make buttons
         const title = make_html_element(data.recipe.title, 'recipe-title', 'recipe-title', 'h2');
+        const title_container = make_html_element('', 'title-container', 'title-container', 'div');
+
+        if (data.remove_flag == "True") {
+            const delete_button = make_html_element("Delete Recipe", 'delete-recipe', 'btn btn-sm btn-outline-danger', 'button');
+            const modify_button = make_html_element("Modify Recipe", 'modify-recipe', 'btn btn-sm btn-outline-primary', 'button');
+
+            // Event listeners for modification/deletion of recipe
+            delete_button.addEventListener('click', () => delete_recipe(data.recipe.title));
+
+            title_container.append(delete_button);
+            title_container.append(title);
+            title_container.append(modify_button);
+        }
+        else {
+            title_container.append(title);
+        }
 
         // make recipe header
         let stars = make_stars(data.recipe);
@@ -559,7 +613,7 @@ function load_recipe(title) {
 
         // append recipe info and image to index layout
         document.querySelector("#recipe-image-div").append(image);
-        document.querySelector("#top-recipe-info").append(title);
+        document.querySelector("#top-recipe-info").append(title_container);
         document.querySelector("#top-recipe-info").append(top_div);
         document.querySelector("#top-recipe-info").append(box_div);
         document.querySelector("#recipe-info-lists").append(make_html_element('', 'hr-box', '', 'hr'));
@@ -596,6 +650,29 @@ function load_recipe(title) {
             document.querySelector('#favorites-button').addEventListener('click', () =>
             update_favorites(data.recipe.title, data.favorite_flag), true);
         }
+    })
+    .catch(error => {
+        console.error('Netwrok Error: ', error);
+    });
+}
+
+// Delete recipe from database
+function delete_recipe(title) {
+    fetch('/delete_recipe/'+title)
+    .then(response => {
+        if (!response.ok) {
+          throw new Error('Error: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data.message);
+        if (data.message === "Recipe deleted.") {
+            window.location.href = "/";
+        }
+    })
+    .catch(error => {
+        console.error('Netwrok Error: ', error);
     });
 }
 
@@ -606,7 +683,12 @@ function update_favorites(title, flag) {
     fetch('/update_favorites/'+title)
 
     // reload recipe page
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+          throw new Error('Error: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(data => {
 
         // update button logic to opposite state
@@ -617,6 +699,9 @@ function update_favorites(title, flag) {
             document.querySelector('#favorites-button').innerHTML = "Add to Favorites";
         }
     })
+    .catch(error => {
+        console.error('Netwrok Error: ', error);
+    });
 }
 
 // trim off extra characters
@@ -646,8 +731,12 @@ function search_recipes() {
             search: `${search}`
         })
     })
-
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+          throw new Error('Error: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(data => {
 
         // show matched recipes view
@@ -697,6 +786,9 @@ function search_recipes() {
 
         // clear search bar
         document.querySelector('#search_box').value = '';
+    })
+    .catch(error => {
+        console.error('Netwrok Error: ', error);
     });
 }
 

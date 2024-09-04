@@ -7,6 +7,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.views.decorators.csrf import csrf_exempt
+
 
 from .models import User, Recipe, Comment
 
@@ -101,6 +103,7 @@ def new_recipe(request):
 
 
 @login_required
+@csrf_exempt
 def add_recipe(request):
     """
     Allows authenticated users to add a new recipe to the cookbook by
@@ -146,7 +149,7 @@ def add_recipe(request):
         # try to create recipie
         try:
             recipe.save()
-            return HttpResponseRedirect("index")
+            return JsonResponse({"message": "Recipe added."}, status=200)
 
         # catch issues with incomplete model fields
         except IntegrityError:
@@ -196,17 +199,18 @@ def all_recipes(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
-def get_recipe(request, name):
+def get_recipe(request, title):
     """
-    Retrieves a specific recipe from the database based on its title
-    (name). The recipe is serialized into a JSON response, and if the user is authenticated,
+    Retrieves a specific recipe from the database based on its title. 
+    The recipe is serialized into a JSON response, and if the user is authenticated,
     a "favorite_flag" indicating whether the recipe is in the user's favorites list is also
     included in the response.
     """
     # get requested recipe and set favorite flag
     try:
-        recipe = Recipe.objects.get(title=name)
+        recipe = Recipe.objects.get(title=title)
         favorite_flag = "None"
+        remove_flag = "None"
 
         # if the recipe is in the user's list of favorites, set favorite flag to True
         if request.user.is_authenticated:
@@ -215,7 +219,30 @@ def get_recipe(request, name):
             else:
                 favorite_flag = "False"
 
-        return JsonResponse({"recipe": recipe.serialize(), "favorite_flag": favorite_flag})
+            if recipe in Recipe.objects.filter(user=request.user):
+                remove_flag = "True"
+
+
+        return JsonResponse({"recipe": recipe.serialize(), "favorite_flag": favorite_flag, "remove_flag": remove_flag})
+
+    # return error code if any other exception occurs
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@login_required
+def delete_recipe(request, title):
+    """
+    Deletes recipe from database based on its title.
+    """
+
+    try:
+        recipe = Recipe.objects.get(title=title)
+        recipe.delete()
+        return JsonResponse({"message": "Recipe deleted."}, status=200)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({"message": "Recipe not found."}, status=404)
 
     # return error code if any other exception occurs
     except Exception as e:
@@ -386,7 +413,6 @@ def cuisine_recipes(request, cuisine):
 
         # set start and end points
         start = int(request.GET.get("start"))
-        print(start)
         end = start + 10
         if start > len(recipes) - 1:
             start = len(recipes) - 1
