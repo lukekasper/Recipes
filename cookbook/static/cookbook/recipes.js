@@ -35,6 +35,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+/////////////////////////////////////////////////////////////////////////////////
+///////////////////////// ALL RECIPES HOME PAGE /////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 function generate_page(title, api_path, id) {
 
     // update page title
@@ -92,6 +96,13 @@ function generate_page(title, api_path, id) {
 
 function load_recipes(user, cuisine) {
 
+    // clean errors
+    //document.querySelector("#query_error").innerHTML = '';
+    //document.querySelector("#search_error").innerHTML = '';
+
+    let start = 0;
+    let end = start + 9;
+
     // hide recipe view and show all recipes
     document.querySelector('#all_recipes').style.display = 'block';
     document.querySelector('#recipe-view').style.display = 'none';
@@ -104,27 +115,45 @@ function load_recipes(user, cuisine) {
 
     // get requested recipes and generate html (user recipes, recipes by cuisine, or all recipes)
     if (user != '') {
-        query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes")
+        query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
     }
-
     else if (cuisine != '') {
-        query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes')
+        query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
+    }
+    else {
+        query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
     }
 
-    else {
-        query_recipes('/all_recipes', 'recipes', 'All Recipes')
-    }
+    // if bottom of screen is reached, load the next 10 recipes
+    window.onscroll = () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+            start += 10; // update counter
+            end += 10;
+
+            // get requested recipes and generate html (user recipes, recipes by cuisine, or all recipes)
+            if (user != '') {
+                query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
+            }
+            else if (cuisine != '') {
+                query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
+            }
+            else {
+                query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
+            }
+        }
+    };
 }
 
 // query recipes and generate html
-function query_recipes(api_path, key, title) {
+async function query_recipes(api_path, key, title, start, end) {
 
     // Send API request to get recipes
-    fetch(`${api_path}`)
-    .then(response => response.json())
-    .then(data => {
+    const responseJSON = await getData(api_path, 'start', start, 'end', end);
+
+    if (!responseJSON.responseError) {
 
         // render a div for each post, displaying relevant info
+        const data = responseJSON.responseData;
         data[key].forEach(recipe => {
 
             // run function to generate html
@@ -133,8 +162,15 @@ function query_recipes(api_path, key, title) {
 
         // update page title
         document.querySelector('#recipes-title').innerHTML = title;
-    });
+    }
+
+    // display response error on front end
+    else {
+        const error = responseJSON.responseError;
+        document.querySelector("#query_error").innerHTML = error;
+    }
 }
+
 
 function make_recipe_html(recipe) {
 
@@ -417,6 +453,10 @@ function uncolor_stars(title, rating, span_list) {
     }
 }
 
+/////////////////////////////////////////////////////////////////////////////////
+///////////////////////// LOAD INDIVIDUAL RECIPES PAGE //////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
 // load recipe page
 function load_recipe(title) {
 
@@ -658,4 +698,46 @@ function search_recipes() {
         // clear search bar
         document.querySelector('#search_box').value = '';
     });
+}
+
+// GET request
+async function getData(url, param1Name = '', data1 = '', param2Name = '', data2 = '') {
+    let responseJSON = {responseData: '', responseError: ''};
+
+    // Append the data as a query parameter to the URL
+    let urlWithParams = `${url}`;
+    if (param2Name.length != 0) {
+        urlWithParams = `${url}?${param1Name}=${encodeURIComponent(data1)}&${param2Name}=${encodeURIComponent(data2)}`;
+    }
+    else if (param1Name.length != 0) {
+        urlWithParams = `${url}?${param1Name}=${encodeURIComponent(data1)}`;
+    }
+
+    try {
+        const response = await fetch(urlWithParams, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        // used to handle HTTP Error Responses
+        if (!response.ok) {
+            // If the response is not OK, handle the error
+            const errorMessage = await response.text();
+            console.error('Error:', errorMessage);
+            responseJSON.responseError = errorMessage;
+            return responseJSON
+        }
+
+        // if response is ok, return the data
+        responseJSON.responseData = await response.json();
+        return responseJSON
+    }
+    catch (error) {
+        // Handle the error that occurred during the asynchronous operation
+        console.error('Network error:', error);
+        responseJSON.responseError = error;
+        return responseJSON
+    }
 }

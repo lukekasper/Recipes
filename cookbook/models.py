@@ -7,6 +7,10 @@ import re
 
 
 class User(AbstractUser):
+    """
+    Represents a user of the recipes book.
+    Adds a "favorites" relationship between a user and a recipe to the built-in Django user model.
+    """
     favorites = models.ManyToManyField('Recipe', symmetrical=False, blank=True, related_name="favoriters")
 
     def serialize(self):
@@ -16,11 +20,13 @@ class User(AbstractUser):
 
 
 class Recipe(models.Model):
+    """
+    Represents a recipe entry into the cookbook"
+    """
     user = models.ForeignKey("User", on_delete=models.CASCADE, null=True, related_name="recipes")
     title = models.CharField(max_length=50, null=True)
     ingredients = models.CharField(max_length=5000, null=True, blank=True)
     instructions = models.CharField(max_length=50000, null=True, blank=True)
-    sub_recipe = models.ManyToManyField('self', symmetrical=False, blank=True, related_name="recipes_contain")
     category = models.CharField(max_length=50, null=True)
     image = models.ImageField(upload_to='images/', blank=True)
     cooktime = models.CharField(max_length=50, null=True)
@@ -28,8 +34,10 @@ class Recipe(models.Model):
     note = models.CharField(max_length=500, blank=True)
     user_rating = models.CharField(max_length=50000, null=True, blank=True)
 
-    # make a dict object from user rating charfield
     def user_rating_dict(self):
+        """
+        Make a dict object from user rating charfield.
+        """
         rating_dict = dict()
         if self.user_rating is not None:
 
@@ -53,22 +61,28 @@ class Recipe(models.Model):
 
         return rating_dict
 
-    # get the number of ratings for a given recipes
     def num_ratings(self):
+        """
+        Get the number of ratings for a given recipes.
+        """
         if self.user_rating_dict():
-            return len(self.user_rating_dict().values());
+            return len(self.user_rating_dict().values())
         else:
             return 0
 
-    # get the average value of the user ratings for display
     def avg_rating(self):
+        """
+        Get the average value of the user ratings for display.
+        """
         if self.user_rating_dict():
             return round(sum(self.user_rating_dict().values())/self.num_ratings(), 1)
         else:
             return 0
 
-    # get all the comments for a specified recipe
     def stringify_comments(self):
+        """
+        Get all the comments for a specified recipe.
+        """
         if self.recipe_comments.all():
             return [comment.serialize() for comment in self.recipe_comments.order_by("timestamp").all()]
         else:
@@ -93,6 +107,9 @@ class Recipe(models.Model):
 
 
 class Comment(models.Model):
+    """
+    Represents a user comment on a recipe.
+    """
     text = models.CharField(max_length=250, null=True)
     user = models.ForeignKey("User", on_delete=models.CASCADE, null=True, related_name="user_comments")
     recipe = models.ForeignKey("Recipe", on_delete=models.CASCADE, null=True, related_name="recipe_comments")

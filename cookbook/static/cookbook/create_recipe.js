@@ -194,13 +194,19 @@ function new_recipe() {
         body: formData
     };
 
-    // send POST request to /new_post API
-    fetch('/add_recipe', options)
+    try {
+        const response = await fetch('/add_recipe', options);
 
-    .then(response => response.json())
-    .then(response => {
-        console.log(response);
-    });
+        if (!response.ok) {
+          throw new Error(`Response status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        console.log('Post Successful!');
+    }
+    catch (error) {
+        console.error(error.message);
+    }
 
     return false;
 }
