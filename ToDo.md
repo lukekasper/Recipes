@@ -7,6 +7,7 @@
 - [ ] Investigate old front end error display
 - [ ] Investigate enabling csrf tokens
 - [ ] Work on alignment of text in beige box in selected recipe page
+- [ ] Standardize JavaScript function names to camelcase
 
 ## Application Deployment ToDos:
 - [ ] Containerize application
