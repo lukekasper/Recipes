@@ -496,17 +496,17 @@ function uncolor_stars(rating, span_list) {
 ///////////////////////// LOAD INDIVIDUAL RECIPES PAGE //////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
-// load recipe page
+// Load recipe page
 async function load_recipe(title) {
 
-    // show user profile view and hide others
+    // Show user profile view and hide others
     document.querySelector('#all_recipes').style.display = 'none';
     document.querySelector('#recipe-view').style.display = 'block';
     document.querySelector('#matched_recipes-view').style.display = 'none';
     document.querySelector('#cuisines-view').style.display = 'none';
     document.querySelector('#favorites-view').style.display = 'none';
 
-    // send API request to get recipe info
+    // Send API request to get recipe info
     const recipe_title = title.replaceAll("_"," ");
 
     try {
@@ -520,29 +520,14 @@ async function load_recipe(title) {
         document.querySelector('#top-recipe-info').innerHTML = '';
         document.querySelector('#recipe-info-lists').innerHTML = '';
 
-        // create recipe html
+        // Create recipe html
         const image = make_image_html(data.recipe.image, 'recipe-image');
 
-        // add title to page header and make buttons
+        // Add title to page header and make buttons
         const title = make_html_element(data.recipe.title, 'recipe-title', 'recipe-title', 'h2');
         const title_container = make_html_element('', 'title-container', 'title-container', 'div');
 
-        if (data.remove_flag == "True") {
-            const delete_button = make_html_element("Delete Recipe", 'delete-recipe', 'btn btn-sm btn-outline-danger', 'button');
-            const modify_button = make_html_element("Modify Recipe", 'modify-recipe', 'btn btn-sm btn-outline-primary', 'button');
-
-            // Event listeners for modification/deletion of recipe
-            delete_button.addEventListener('click', () => delete_recipe(data.recipe.title));
-
-            title_container.append(delete_button);
-            title_container.append(title);
-            title_container.append(modify_button);
-        }
-        else {
-            title_container.append(title);
-        }
-
-        // make recipe header
+        // Make recipe header
         let stars = make_stars(data.recipe);
         stars.setAttribute('id','single-recipe-stars');
         const poster_container = make_html_element("|&nbsp;&nbsp;&nbsp;&nbsp;Recipe by ", 'poster-container', '', 'p');
@@ -554,33 +539,33 @@ async function load_recipe(title) {
         top_div.append(poster_container);
         top_div.append(timestamp);
 
-        // split strings into lists
+        // Split strings into lists
         const ingredients_list = data.recipe.ingredients.split(',');
         const directions_list = data.recipe.instructions.split(',');
         const notes_list = data.recipe.note.split(',');
 
-        // make outer list html
+        // Make outer list html
         const ing_ul = make_html_element('', 'ing_ul', 'recipe_list_items', 'ul');
         const dir_ol = make_html_element('', 'dir_ol', 'recipe_list_items', 'ol');
         const notes_ul = make_html_element('', 'notes_ul', 'recipe_list_items', 'ul');
 
-        // append ingredients to ul
+        // Append ingredients to ul
         let subrec_list = [];
         const recipes_list = await return_recipes();
         ingredients_list.forEach(ingredient => {
             if (ingredient != '' && ingredient != '[' && ingredient != ']' && ingredient != ',') {
                 let current_ingredient = trim_chars(ingredient);
-                let current_ing_li = make_html_element(current_ingredient, 'ing_li_'+current_ingredient, 'ing_li_', 'li');
+                let current_ing_li = make_html_element(current_ingredient, 'ing_li_'+current_ingredient, 'ing_li', 'li');
                 ing_ul.append(current_ing_li);
 
-                // check if any ingredient is also a recipe
+                // Check if any ingredient is also a recipe
                 if (recipes_list.includes(current_ingredient)) {
 
-                    // add event listener for poster to change color when moused over
+                    // Add event listener for poster to change color when moused over
                     current_ing_li.addEventListener('mouseover', changeColorToBlue);
                     current_ing_li.addEventListener('mouseout', changeColorToBlack);
 
-                    // do the same for for clicking image or title of recipe
+                    // Do the same for for clicking image or title of recipe
                     current_ing_li.addEventListener('click', () => load_recipe(current_ingredient));
 
                     subrec_list.push(current_ingredient);
@@ -588,26 +573,26 @@ async function load_recipe(title) {
             }
         })
 
-        // append directions to ol
+        // Append directions to ol
         directions_list.forEach(direction => {
             direction = trim_chars(direction);
-            dir_ol.append(make_html_element(direction, 'dir_li', '', 'li'));
+            dir_ol.append(make_html_element(direction, 'dir_li', 'dir_li', 'li'));
         })
 
-        // append notes to ul
+        // Append notes to ul
         notes_list.forEach(note => {
 
-            // if note is not empty
+            // If note is not empty
             if (note != '' && note != '[' && note != ']' && note != ',') {
                 note = trim_chars(note);
-                notes_ul.append(make_html_element(note, 'note_li', 'recipe_list_items', 'li'));
+                notes_ul.append(make_html_element(note, 'note_li', 'note_li', 'li'));
             }
         })
 
-        const category = make_html_element(data.recipe.category, '', 'info', 'div');
-        const cooktime = make_html_element(data.recipe.cooktime, '', 'info', 'div');
+        const category = make_html_element(data.recipe.category, 'cat-info', 'info', 'div');
+        const cooktime = make_html_element(data.recipe.cooktime, 'time-info', 'info', 'div');
 
-        // make box for category and time
+        // Make box for category and time
         const cat_container = make_html_element('', 'cat-container', 'recipe-container', 'div');
         const time_container = make_html_element('', 'time-container', 'recipe-container', 'div');
         const info_box = make_html_element('', 'recipe-info_box', '', 'div');
@@ -626,41 +611,68 @@ async function load_recipe(title) {
         const box_div = make_html_element('', 'box_div', 'box_div', 'div');
         box_div.append(info_box);
 
-        // make containers and add info for ingredients, directions
+        // Make containers and add info for ingredients, directions
         const ing_div = make_html_element('Ingredients:', 'ing_div', 'recipe_list_div', 'div');
         ing_div.append(ing_ul);
 
         const dir_div = make_html_element('Directions:', 'dir_div', 'recipe_list_div', 'div');
         dir_div.append(dir_ol);
 
-        // append recipe info and image to index layout
+        const lists_div = make_html_element('', 'lists_div', 'lists_div', 'div');
+        lists_div.append(ing_div);
+        lists_div.append(dir_div);
+
+        // Add buttons to modify/remove recipe if user posted it
+        if (data.remove_flag == "True") {
+            const delete_button = make_html_element("Delete Recipe", 'delete-button', 'btn btn-sm btn-outline-danger', 'button');
+            const edit_button = make_html_element("Edit Recipe", 'edit-button', 'btn btn-sm btn-outline-primary', 'button');
+
+            // Event listeners for modification/deletion of recipe
+            delete_button.addEventListener('click', () => delete_recipe(data.recipe.title));
+            edit_button.addEventListener('click', () => edit_view(subrec_list));
+
+            title_container.append(delete_button);
+            title_container.append(title);
+            title_container.append(edit_button);
+        }
+        else {
+            title_container.append(title);
+        }
+
+        // Partition for lists and edit box
+        const edit_div = make_html_element('', 'edit_div', 'edit_div', 'div');
+
+        const middle_div = make_html_element('', 'mid_div', 'mid_div', 'div');
+        middle_div.append(lists_div);
+        middle_div.append(edit_div);
+
+        // Append recipe info and image to index layout
         document.querySelector("#recipe-image-div").append(image);
         document.querySelector("#top-recipe-info").append(title_container);
         document.querySelector("#top-recipe-info").append(top_div);
         document.querySelector("#top-recipe-info").append(box_div);
         document.querySelector("#recipe-info-lists").append(make_html_element('', 'hr-box', '', 'hr'));
-        document.querySelector("#recipe-info-lists").append(ing_div);
-        document.querySelector("#recipe-info-lists").append(dir_div);
+        document.querySelector("#recipe-info-lists").append(middle_div);
 
-        // if notes exist, append a div for them
+        // If notes exist, append a div for them
          if (notes_list.length != 0) {
             const notes_div = make_html_element('Notes:', 'notes_div', 'recipe_list_div', 'div');
             notes_div.append(notes_ul);
             document.querySelector("#recipe-info-lists").append(notes_div);
          }
 
-        // widget to add/remove recipe from favorites
+        // Widget to add/remove recipe from favorites
         if (data.favorite_flag == "None") {
 
-            // hide favorites button if user is not signed in
+            // Hide favorites button if user is not signed in
             document.querySelector('#favorites-div').style.display = 'none';
         }
         else {
 
-            // show favorites button
+            // Show favorites button
             document.querySelector('#favorites-div').style.display = 'block';
 
-            // determine if recipe is already in user's favorited list
+            // Determine if recipe is already in user's favorited list
             if (data.favorite_flag == "True") {
                 document.querySelector('#favorites-button').innerHTML = "Remove from Favorites";
             }
@@ -668,7 +680,7 @@ async function load_recipe(title) {
                 document.querySelector('#favorites-button').innerHTML = "Add to Favorites";
             }
 
-            // update user's favorites when button is clicked
+            // Update user's favorites when button is clicked
             document.querySelector('#favorites-button').addEventListener('click', () =>
             update_favorites(data.recipe.title), true);
         }
@@ -698,18 +710,18 @@ function delete_recipe(title) {
     });
 }
 
-function changeColorToBlue(element) {
+function changeColorToBlue() {
     this.style.color = "blue";
 }
 
-function changeColorToBlack(element) {
+function changeColorToBlack() {
     this.style.color = "black";
 }
 
-// enter edit recipes view
+// Enter edit recipes view
 function edit_view(subrec_list) {
 
-    // remove event listeners for sub recipes
+    // Remove event listeners for sub recipes
     subrec_list.forEach(subrec => {
 
         let id = "ing_li_"+subrec;
@@ -718,14 +730,14 @@ function edit_view(subrec_list) {
         subrec_el.removeEventListener('mouseover', changeColorToBlue);
         subrec_el.removeEventListener('mouseout', changeColorToBlack);
 
-        // do the same for for clicking image or title of recipe
+        // Do the same for for clicking the ingredient
         subrec_el.removeEventListener('click', () => load_recipe(subrec_el.innerHTML));
     })
 
 
-    // assign recipie contents to variables
+    // Assign recipie contents to variables
     let edit_button = document.querySelector("#edit-button");
-    let edit_button_div = document.querySelector("#edit-button_div");
+    let edit_div = document.querySelector("#edit_div");
 
     let cat_info = document.querySelector("#cat-info");
     let time_info = document.querySelector("#time-info");
@@ -734,16 +746,19 @@ function edit_view(subrec_list) {
     let dir_list = document.querySelector("#dir_ol");
     let notes_list = document.querySelector("#notes_ul");
 
-    // remove event listener
+    // Remove event listener
     edit_button.removeEventListener('click', () => edit_view());
 
-    // update edit button text and add display message for user
+    // Update edit button text and add display message for user
     edit_button.innerHTML = "Save Updates";
-    const text = "Click on content to bring up text editor.";
+    const text = "Click on recipe content to add to text editor.";
     const display_message = make_html_element(text, 'edit_message', 'edit_message', 'p');
-    edit_button_div.append(display_message);
+    edit_div.append(display_message);
 
-    // add UI for editing different recipie contents
+    const editor = make_html_element("", 'text_edit', 'text_edit', 'textarea');
+    edit_div.append(editor);
+
+    // Add UI for editing different recipie contents
     edit_UI(cat_info);
     edit_UI(time_info);
     edit_UI(ing_list);
@@ -751,19 +766,53 @@ function edit_view(subrec_list) {
     edit_UI(notes_list);
 }
 
-// generic function to highlight content when mouse-over and add to text editor pop-up when clicked
+// Highlights text when hovered over and adds text to textbox when clicked
 function edit_UI(current_el) {
 
     // add event listener to highlight text for editing
     current_el.addEventListener('mouseover', () => {
-        current_el.style.opacity = "0.5";
-        });
+        setOpacity(current_el, "0.5");
+    });
+
     current_el.addEventListener('mouseout', () => {
-        current_el.style.opacity = "1.0";
-        });
+        setOpacity(current_el, "1.0");
+    });
+
+    current_el.addEventListener('click', () => {
+        addText(current_el);
+    });
 
     // add highlighted text to pop-up editor TO DO!!!!
 
+}
+
+// Set text opacity
+function setOpacity(element, value) {
+    element.style.opacity = value;
+}
+
+// Event listener to add text to textarea
+function addText(element) {
+
+    let text = "";
+
+    if (element.className == "recipe_list_items") {
+        const items = element.querySelectorAll("li");
+
+        items.forEach(item => {
+            text += "- " + item.textContent + "\n";
+        });
+        text = text.slice(0,-1);
+    }
+    else {
+        text = element.innerHTML;
+    }
+
+    document.querySelector("#text_edit").value = text;
+
+
+
+    //document.querySelector("#text_edit").value = 
 }
 
 /////////////////////////////////////////////////////////////////////////////////
