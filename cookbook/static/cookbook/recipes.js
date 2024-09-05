@@ -809,10 +809,6 @@ function addText(element) {
     }
 
     document.querySelector("#text_edit").value = text;
-
-
-
-    //document.querySelector("#text_edit").value = 
 }
 
 /////////////////////////////////////////////////////////////////////////////////
