@@ -5,6 +5,7 @@
 - [ ] Remove unecessary POST request for search function and switch to GET with query params
 - [ ] Investigate old front end error display
 - [ ] Investigate enabling csrf tokens
+- [ ] Work on alignment of text in beige box in selected recipe page
 
 ## Application Deployment ToDos:
 - [ ] Containerize application
