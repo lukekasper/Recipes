@@ -1,5 +1,6 @@
 ## Application Code ToDos:
 - [ ] Finish modify recipe feature
+  - [ ] Post-processing for textarea lists
   - [ ] Implement Save Updates Button
 - [ ] Standardize fetch calls
 - [ ] Remove notes block from single recipe page if there are no notes
