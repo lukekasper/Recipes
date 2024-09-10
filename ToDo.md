@@ -1,13 +1,8 @@
 ## Application Code ToDos:
-- [ ] Finish modify recipe feature
-  - [ ] Post-processing for textarea lists
-  - [ ] Implement Save Updates Button
 - [ ] Standardize fetch calls
-- [ ] Remove notes block from single recipe page if there are no notes
 - [ ] Remove unecessary POST request for search function and switch to GET with query params
 - [ ] Investigate old front end error display
 - [ ] Investigate enabling csrf tokens
-- [ ] Work on alignment of text in beige box in selected recipe page
 - [ ] Standardize JavaScript function names to camelcase
 
 ## Application Deployment ToDos:
