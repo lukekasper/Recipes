@@ -4,6 +4,8 @@
 - [ ] Investigate old front end error display
 - [ ] Investigate enabling csrf tokens
 - [ ] Standardize JavaScript function names to camelcase
+- [ ] Fix bug for window scroll
+- [ ] Search feature for "ap" is not picking up ingredient title and ingredients list, fix
 
 ## Application Deployment ToDos:
 - [ ] Containerize application
