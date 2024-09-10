@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // run when username is clicked
     if (document.querySelector('#usrname')) {
         document.querySelector('#usrname').addEventListener('click', () => {
-            let usrname = document.querySelector('#name').innerHTML;
+            const usrname = document.querySelector('#name').innerHTML;
             load_recipes(user=usrname, cuisine='');
             history.pushState({}, '', "/" + usrname);
         });
@@ -80,7 +80,7 @@ function generate_page(title, api_path, id) {
             }
 
             // make list html and append to ul
-            let element = make_html_element(content, content+'_li', 'li_item', 'li');
+            const element = make_html_element(content, content+'_li', 'li_item', 'li');
             document.querySelector(id).append(element);
 
             // add event listener to link to clicked recipes page and change color when mouseover
@@ -197,7 +197,7 @@ function make_recipe_html(recipe) {
     commentsDiv.append(make_html_element('', 'comments-inner_'+recipe_title, 'comments-inner', 'div'));
 
     // add star rating system
-    let stars = make_stars(recipe);
+    const stars = make_stars(recipe);
 
     // create comments button
     const comments_button = make_html_element('Show Comments', 'comments-button_'+recipe_title, 'comments-button', 'button');
@@ -248,7 +248,7 @@ function make_stars(recipe) {
     let span_list = [s1, s2, s3, s4, s5];
 
     // loop through the star spans, and check the number based on the recipe rating
-    for (let i=0; i<5; i++) {
+    for (let i = 0; i < 5; i++) {
         if (i+1 <= Math.round(recipe.rating)) {
             span_list[i].setAttribute('class', 'fa fa-star checked');
         }
@@ -353,7 +353,7 @@ function make_comment_html(comment, title) {
     comment_p.append(comment_txt);
 
     // add an option to delete comment if it the signed in user posted it
-    let usrname = document.querySelector('#name').innerHTML;
+    const usrname = document.querySelector('#name').innerHTML;
     const x = make_image_html("https://icons.veryicon.com/png/o/miscellaneous/kqt/close-116.png", 'x'+comment.id);
     x.setAttribute('class','x');
     comment_p.append(x);
@@ -554,8 +554,8 @@ async function load_recipe(title) {
         const recipes_list = await return_recipes();
         ingredients_list.forEach(ingredient => {
             if (ingredient != '' && ingredient != '[' && ingredient != ']' && ingredient != ',') {
-                let current_ingredient = trim_chars(ingredient);
-                let current_ing_li = make_html_element(current_ingredient, 'ing_li_'+current_ingredient, 'ing_li', 'li');
+                const current_ingredient = trim_chars(ingredient);
+                const current_ing_li = make_html_element(current_ingredient, 'ing_li_'+current_ingredient, 'ing_li', 'li');
                 ing_ul.append(current_ing_li);
 
                 // Check if any ingredient is also a recipe
@@ -655,11 +655,11 @@ async function load_recipe(title) {
         document.querySelector("#recipe-info-lists").append(middle_div);
 
         // If notes exist, append a div for them
-         if (notes_list.length != 0) {
+        if (notes_list.length != 1 || notes_list[0] != '[]') {
             const notes_div = make_html_element('Notes:', 'notes_div', 'recipe_list_div', 'div');
             notes_div.append(notes_ul);
             document.querySelector("#recipe-info-lists").append(notes_div);
-         }
+        }
 
         // Widget to add/remove recipe from favorites
         if (data.favorite_flag == "None") {
@@ -724,39 +724,46 @@ function edit_view(subrec_list) {
     // Remove event listeners for sub recipes
     subrec_list.forEach(subrec => {
 
-        let id = "ing_li_"+subrec;
+        const id = "ing_li_"+subrec;
         let subrec_el = document.getElementById(id);
 
-        subrec_el.removeEventListener('mouseover', changeColorToBlue);
-        subrec_el.removeEventListener('mouseout', changeColorToBlack);
-
-        // Do the same for for clicking the ingredient
-        subrec_el.removeEventListener('click', () => load_recipe(subrec_el.innerHTML));
+        const copy = subrec_el.cloneNode(true);
+        subrec_el.replaceWith(copy);
     })
 
-
     // Assign recipie contents to variables
-    let edit_button = document.querySelector("#edit-button");
+    const edit_button = document.querySelector("#edit-button");
     let edit_div = document.querySelector("#edit_div");
 
-    let cat_info = document.querySelector("#cat-info");
-    let time_info = document.querySelector("#time-info");
+    const cat_info = document.querySelector("#cat-info");
+    const time_info = document.querySelector("#time-info");
 
-    let ing_list = document.querySelector("#ing_ul");
-    let dir_list = document.querySelector("#dir_ol");
-    let notes_list = document.querySelector("#notes_ul");
+    const ing_list = document.querySelector("#ing_ul");
+    const dir_list = document.querySelector("#dir_ol");
+    const notes_list = document.querySelector("#notes_ul");
 
     // Remove event listener
-    edit_button.removeEventListener('click', () => edit_view());
+    const save_button = edit_button.cloneNode(true);
+    edit_button.replaceWith(save_button);
 
     // Update edit button text and add display message for user
-    edit_button.innerHTML = "Save Updates";
+    save_button.innerHTML = "Save Updates";
     const text = "Click on recipe content to add to text editor.";
     const display_message = make_html_element(text, 'edit_message', 'edit_message', 'p');
     edit_div.append(display_message);
 
     const editor = make_html_element("", 'text_edit', 'text_edit', 'textarea');
+    editor.setAttribute('data-source-id', '');
+    editor.setAttribute('data-source-class', '');
     edit_div.append(editor);
+
+    editor.removeEventListener('keydown', add_bullets);
+    editor.addEventListener('keydown', add_bullets);
+
+    // Make button to save updated text
+    const update_button = make_html_element("Update Recipe", 'update-button', 'btn btn-sm btn-outline-primary', 'button');
+    edit_div.append(update_button);
+    update_button.addEventListener('click', () => update_recipe());
 
     // Add UI for editing different recipie contents
     edit_UI(cat_info);
@@ -764,6 +771,29 @@ function edit_view(subrec_list) {
     edit_UI(ing_list);
     edit_UI(dir_list);
     edit_UI(notes_list);
+
+    // Add event listener to save recipe modifications
+    const title = document.querySelector("#recipe-title").innerHTML;
+    save_button.addEventListener('click', () => save_updates(title));
+}
+
+// Add bullets to text editor on Enter key press
+function add_bullets(e) {
+    // When pressed, append a '- ' to each line to resemble a bulleted list
+    if (e.key == 'Enter') {
+        let new_text_list = [];
+        setTimeout(() => {
+            let lines = e.target.value.split('\n');
+            lines.forEach(line => {
+                if (line[0] != '-') {
+                    line = '- ' + line;
+                }
+                new_text_list.push(line);
+            })
+            let new_text = new_text_list.join('\n');
+            e.target.value = new_text;
+        }, 1);
+    }
 }
 
 // Highlights text when hovered over and adds text to textbox when clicked
@@ -781,9 +811,6 @@ function edit_UI(current_el) {
     current_el.addEventListener('click', () => {
         addText(current_el);
     });
-
-    // add highlighted text to pop-up editor TO DO!!!!
-
 }
 
 // Set text opacity
@@ -791,7 +818,7 @@ function setOpacity(element, value) {
     element.style.opacity = value;
 }
 
-// Event listener to add text to textarea
+// Add selected text to textarea
 function addText(element) {
 
     let text = "";
@@ -809,6 +836,117 @@ function addText(element) {
     }
 
     document.querySelector("#text_edit").value = text;
+    document.querySelector("#text_edit").dataset.sourceId = element.id;
+    document.querySelector("#text_edit").dataset.sourceClass = element.className;
+}
+
+// Update recipe text with modified textarea content
+function update_recipe() {
+
+    let id = document.querySelector("#text_edit").dataset.sourceId;
+
+    if (id.length != 0) {
+        id = "#" + id;
+        const className = document.querySelector("#text_edit").dataset.sourceClass;
+        const text = document.querySelector("#text_edit").value;
+
+        const element = document.querySelector(id);
+
+        if (className == "recipe_list_items") {
+            const list = text.split('\n');
+
+            // Remove empty list elements
+            for (let i = 0; i < list.length; i++) {
+                if (list[i] == "- " || list[i] == '' || list[i] == ' ') {
+                    list.splice(i, 1);
+                    i--;
+                }
+            }
+
+            let items = element.querySelectorAll("li");
+
+            // Add or remove li elements
+            let difference = list.length - items.length;
+
+            if (difference > 0) {
+                while (difference > 0) {
+                    const new_li = document.createElement("li");
+                    element.appendChild(new_li);
+                    difference--;
+                }
+            }
+            else if (difference < 0) {
+                while (difference < 0) {
+                    const list_li = items[items.length - 1];
+                    element.removeChild(list_li);
+                    difference++;
+                }
+            }
+
+            items = element.querySelectorAll("li");
+            items.forEach((item, index) => {
+                let line = list[index]
+
+                if (line[0] == '-') {
+                    line = line.slice(2);
+                }
+
+                item.textContent = line;
+            });
+        }
+        else {
+            element.innerHTML = text;
+        }
+    }
+}
+
+// Make PUT request to backend to update recipe content
+function save_updates(title) {
+
+    // Get info from recipe list elements
+    const ingredients_list = stringify_list('ing_ul');
+    const directions_list = stringify_list('dir_ol');
+    const notes_list = stringify_list('notes_ul');
+
+    let formData = new FormData();
+    formData.append('category', document.querySelector('#cat-info').innerHTML);
+    formData.append('cooktime', document.querySelector('#time-info').innerHTML);
+    formData.append('ingredients', ingredients_list);
+    formData.append('instructions', directions_list);
+    formData.append('notes', notes_list);
+
+    const options = {
+        method: 'POST',
+        body: formData
+    };
+
+    // send API request to update recipe content
+    fetch('/update_recipe/'+title, options)
+
+    // Reload recipe page
+    .then(response => {
+        if (!response.ok) {
+          throw new Error('Error: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data.message);
+        if (data.message === "Recipe updated.") {
+            window.location.href = "/";
+        }
+    })
+    .catch(error => {
+        console.error('Netwrok Error: ', error);
+    });
+
+}
+
+function stringify_list(id) {
+    const list_element = document.querySelector("#" + id);
+    const li_elements = list_element.querySelectorAll('li');
+    const list_content = Array.from(li_elements).map(li => li.textContent);
+    return JSON.stringify(list_content);
 }
 
 /////////////////////////////////////////////////////////////////////////////////

@@ -240,6 +240,60 @@ def delete_recipe(request, title):
 
 
 @login_required
+@csrf_exempt
+def update_recipe(request, title):
+    """
+    Updates recipe with new content.
+    """
+    if request.method == "POST":
+        try:
+            recipe = Recipe.objects.get(title=title)
+
+            # Get Form data
+            category = request.POST.get("category")
+            category = category[0].upper() + category[1:].lower()
+
+            cooktime = request.POST.get("cooktime")
+
+
+            # add ingredients and directions
+            ingredients = list(request.POST.get("ingredients").split(","))
+            ingredients_str = ''
+            for ingredient in ingredients:
+                ingredients_str += ingredient + ","
+            ingredients_str = ingredients_str[:-1]
+
+            instructions = request.POST.get("instructions")
+
+            # add notes to recipe model if notes were uploaded, otherwise leave blank
+            if request.POST.get("notes", False):
+                notes = request.POST.get("notes")
+            else:
+                notes = ''
+
+            # Update recipe
+            recipe.ingredients = ingredients_str
+            recipe.instructions = instructions
+            recipe.category = category
+            recipe.cooktime = cooktime
+            recipe.note = notes
+            recipe.save()
+
+            return JsonResponse({"message": "Recipe updated."}, status=200)
+
+        except ObjectDoesNotExist:
+            return JsonResponse({"message": "Recipe not found."}, status=404)
+
+        # return error code if any other exception occurs
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+        
+     # For other request methods (e.g., GET, PUT, DELETE, etc.), return HTTP 405 Method Not Allowed
+    error_message = "Only POST method is allowed for this URL."
+    return HttpResponseNotAllowed(permitted_methods=["POST"], content=error_message)
+
+
+@login_required
 def update_rating(request, name):
     """
     Allows authenticated users to update the rating of a specific recipe

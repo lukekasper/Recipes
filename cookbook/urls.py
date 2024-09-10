@@ -21,5 +21,6 @@ urlpatterns = [
     path("update_favorites/<str:title>", views.update_favorites, name="update_favorites"),
     path("add_comment/<str:title>", views.add_comment, name="add_comment"),
     path("remove_comment/<int:id>", views.remove_comment, name="remove_comment"),
-    path("delete_recipe/<str:title>", views.delete_recipe, name="delete_recipe")
+    path("delete_recipe/<str:title>", views.delete_recipe, name="delete_recipe"),
+    path("update_recipe/<str:title>", views.update_recipe, name="update_recipe")
 ]
