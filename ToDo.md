@@ -7,5 +7,6 @@
 
 ## Application Deployment ToDos:
 - [ ] Containerize application
+- [ ] Configure gunicorn server
 - [ ] Configure MySQL database
 - [ ] Host containerized application and database on AWS free tier system
