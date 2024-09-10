@@ -1,6 +1,5 @@
 ## Application Code ToDos:
 - [ ] Standardize fetch calls
-- [ ] Remove notes block from single recipe page if there are no notes
 - [ ] Remove unecessary POST request for search function and switch to GET with query params
 - [ ] Investigate old front end error display
 - [ ] Investigate enabling csrf tokens
