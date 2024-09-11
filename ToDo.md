@@ -6,6 +6,7 @@
 - [ ] Standardize JavaScript function names to camelcase
 - [ ] Fix bug for window scroll
 - [ ] Search feature for "ap" is not picking up ingredient title and ingredients list, fix
+- [ ] Add hover boxes to describe search functionality or recipe upload
 
 ## Application Deployment ToDos:
 - [ ] Containerize application
