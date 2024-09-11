@@ -73,7 +73,6 @@ h3 {
 
 #directions {
     position: relative;
-    padding: 25px;
     width: 100%;
 }
 
@@ -238,7 +237,7 @@ hr {
 }
 
 h4 {
-    margin: 25px;
+    margin-left: 25px;
 }
 
 .nav-link {
@@ -470,4 +469,16 @@ h4 {
 #favorites-button {
     margin-bottom: 30px;
     margin-left: 30px;
+}
+
+#new-recipe-title {
+    margin: 15px;
+}
+
+.outer {
+    margin-top: 40px;
+}
+
+#notes {
+    width: 100%;
 }

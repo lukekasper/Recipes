@@ -365,6 +365,11 @@ def search_recipes(request):
             recipe_ingredients_list = recipe_ingredients_list.split(",")
 
             # if the recipe has the ingredients being searched, add it to the list of recipes to return
+            if len(search_list) == 1:
+                for ingredient in recipe_ingredients_list:
+                    if search_list[0] in ingredient:
+                        matched_recipes.add(recipe.title)
+
             if set(search_list).issubset(set(recipe_ingredients_list)):
                 matched_recipes.add(recipe.title)
 

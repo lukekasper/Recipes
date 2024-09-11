@@ -27,8 +27,8 @@ function add_ingredient() {
     // create a blank list to add ingredients to and get the value of the ingredients input form
     let ingredients = document.querySelector('#ingredients_entry').value;
 
-    // split by ',' so user can input multiple ingredients at once
-    ingredients = ingredients.split(",");
+    // split by ';' so user can input multiple ingredients at once
+    ingredients = ingredients.split(";");
 
     ingredients.forEach((ingredient) => {
 
@@ -73,8 +73,6 @@ function add_direction() {
 
     // add direction and direction number to dict
     directions_list.push(direction_new);
-
-
 
     // loop through the list and look for the blank entry (which means direction was clicked on for editing)
     for (dir in directions_list) {

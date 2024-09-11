@@ -8,20 +8,20 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('#usrname').addEventListener('click', () => {
             const usrname = document.querySelector('#name').innerHTML;
             load_recipes(user=usrname, cuisine='');
-            history.pushState({}, '', "/" + usrname);
+            //history.pushState({}, '', "/" + usrname);
         });
     }
 
     // run when cuisines is clicked
     document.querySelector('#Cuisines-link').addEventListener('click', () => {
         generate_page('Cuisines', '/cuisines', '#cuisines');
-        history.pushState({}, '', "/categories");
+        //history.pushState({}, '', "/categories");
     });
 
     // run when favorites is clicked
     document.querySelector('#Favoirtes-link').addEventListener('click', () => {
         generate_page('My Favorites', '/favorites', '#favorites');
-        history.pushState({}, '', "/favorites");
+        //history.pushState({}, '', "/favorites");
     });
 
     // run when search icon is clicked
@@ -121,32 +121,34 @@ function load_recipes(user, cuisine) {
     // clear all recipes html
     document.querySelector('#all_recipes').innerHTML = '';
 
+    let num_recipes = 0;
+
     // get requested recipes and generate html (user recipes, recipes by cuisine, or all recipes)
     if (user != '') {
-        query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
+        num_recipes = query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
     }
     else if (cuisine != '') {
-        query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
+        num_recipes = query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
     }
     else {
-        query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
+        num_recipes = query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
     }
 
     // if bottom of screen is reached, load the next 10 recipes
     window.onscroll = () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && end < num_recipes) {
             start += 10; // update counter
             end += 10;
 
             // get requested recipes and generate html (user recipes, recipes by cuisine, or all recipes)
             if (user != '') {
-                query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
+                num_recipes = query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
             }
             else if (cuisine != '') {
-                query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
+                num_recipes = query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
             }
             else {
-                query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
+                num_recipes = query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
             }
         }
     };
@@ -160,8 +162,9 @@ async function query_recipes(api_path, key, title, start, end) {
 
     if (!responseJSON.responseError) {
 
-        // render a div for each post, displaying relevant info
+        // render a div for each post, displaying relevant info=
         const data = responseJSON.responseData;
+
         data[key].forEach(recipe => {
 
             // run function to generate html
@@ -170,12 +173,15 @@ async function query_recipes(api_path, key, title, start, end) {
 
         // update page title
         document.querySelector('#recipes-title').innerHTML = title;
+
+        return data[key].length;
     }
 
     // display response error on front end
     else {
         const error = responseJSON.responseError;
-        document.querySelector("#query_error").innerHTML = error;
+        //document.querySelector("#query_error").innerHTML = error;
+        return null
     }
 }
 
@@ -868,6 +874,9 @@ function update_recipe() {
             // Add or remove li elements
             let difference = list.length - items.length;
 
+            console.log(list.length);
+            console.log(items.length);
+
             if (difference > 0) {
                 while (difference > 0) {
                     const new_li = document.createElement("li");
@@ -877,7 +886,8 @@ function update_recipe() {
             }
             else if (difference < 0) {
                 while (difference < 0) {
-                    const list_li = items[items.length - 1];
+                    items = element.querySelectorAll("li");
+                    let list_li = items[items.length - 1];
                     element.removeChild(list_li);
                     difference++;
                 }
