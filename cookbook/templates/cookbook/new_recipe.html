@@ -3,75 +3,55 @@
 
 {% block body %}
 
-    <h2>Add New Recipe</h2>
-    <div class="outer">
-        <div>
-            <form method="post" id="new_recipe-form">
-                {% csrf_token %}
-                <div class="new_recipe-entry">
-                    <p class="container">
-                        <span class="label">Title: </span>
-                        <span class="new_recipe-info" id="title_entry">
-                            <input type="text" name="title" maxlength="50" required="" id="id_title">
-                        </span>
-                    </p>
-                    <p class="container">
-                        <span class="label">Ingredients: </span>
-                        <textarea class="new_recipe-info" id="ingredients_entry" name="ingredients"></textarea>
-                        <button id="ingredients-button" type="button">Add Ingredient</button>
-                    </p>
-                    <p id="cooking_container" class="container">
-                        <span id="instructions_label" class="label">Cooking Instructions: </span>
-                        <textarea class="new_recipe-info" id="instructions_entry" name="instructions"></textarea>
-                        <button id="instructions-button" type="button">Add Direction</button>
-                    </p>
-                    <p class="container">
-                        <span class="label">Category: </span>
-                        <span class="new_recipe-info" id="category_entry">
-                            <input type="text" name="category" maxlength="50" required="" id="id_category">
-                        </span>
-                    </p>
-                    <p class="container">
-                        <span class="label">Add Image: </span>
-                        <span class="new_recipe-info" id="image_entry">
-                            <input type="file" name="image" accept="image/*" id="id_image">
-                        </span>
-                    </p>
-                    <p class="container">
-                        <span class="label">Cooktime: </span>
-                        <span class="new_recipe-info" id="cooktime_entry">
-                            <input type="text" name="cooktime" maxlength="50" required="" id="id_cooktime">
-                        </span>
-                    </p>
-                    <p class="container">
-                        <span class="label">Additional Notes: </span>
-                        <textarea class="new_recipe-info" id="note_entry"></textarea>
-                        <button id="notes-button" type="button">Add Note</button>
-                    </p>
-                    <button class="btn btn-primary" id="new_recipe-button">Add Recipe</button>
-                </div>
-            </form>
-        </div>
-        <div id="ingredients_list">
-            <h4>Ingredients List: </h4>
-            <div id="list_1" class="ing_list">
-                <ul id="ul_1"></ul>
-            </div>
-            <div id="list_2">
-                <ul id="ul_2"></ul>
-            </div>
-        </div>
-        <div id="directions">
-            <hr>
-            <h4>Directions: </h4>
-            <ol id="directions-list"></ol>
-        </div>
-        <div id="notes">
-            <hr>
-            <h4>Notes: </h4>
-            <ul id="notes-list"></ul>
-        </div>
+    <div id="title-div">
+        <h2 id="new-recipe-title">Add New Recipe</h2>
+        <img src="https://static.thenounproject.com/png/568541-200.png" class="help-icon" id="new-recipe-help">
+        <p class="help-box" id="help-box1">Ingredients, Cooking Instructions, and Additional Notes can be added in list format using ';' as the delimiter.  Ex) Note1; Note2; Notes3</p>
+    </div>
 
+    <div class="outer">
+        <form method="post" id="new_recipe-form">
+            {% csrf_token %}
+            <div class="new_recipe-entry">
+                <p class="container">
+                    <span class="label">Title: </span>
+                    <span class="new_recipe-info" id="title_entry">
+                        <input type="text" name="title" maxlength="50" required="" id="id_title" class="input_width">
+                    </span>
+                </p>
+                <p class="container">
+                    <span class="label">Ingredients: </span>
+                    <textarea class="new_recipe-info" id="ingredients_entry" name="ingredients"></textarea>
+                </p>
+                <p id="cooking_container" class="container">
+                    <span id="instructions_label" class="label">Cooking Instructions: </span>
+                    <textarea class="new_recipe-info" id="instructions_entry" name="instructions"></textarea>
+                </p>
+                <p class="container">
+                    <span class="label">Category: </span>
+                    <span class="new_recipe-info" id="category_entry">
+                        <input type="text" name="category" maxlength="50" required="" id="id_category" class="input_width">
+                    </span>
+                </p>
+                <p class="container">
+                    <span class="label">Add Image: </span>
+                    <span class="new_recipe-info" id="image_entry">
+                        <input type="file" name="image" accept="image/*" id="id_image" class="input_width">
+                    </span>
+                </p>
+                <p class="container">
+                    <span class="label">Cooktime: </span>
+                    <span class="new_recipe-info" id="cooktime_entry">
+                        <input type="text" name="cooktime" maxlength="50" required="" id="id_cooktime" class="input_width">
+                    </span>
+                </p>
+                <p class="container">
+                    <span class="label">Additional Notes: </span>
+                    <textarea class="new_recipe-info" id="note_entry"></textarea>
+                </p>
+                <button class="btn btn-primary" id="new_recipe-button">Add Recipe</button>
+            </div>
+        </form>
     </div>
 {% endblock %}
 

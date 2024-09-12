@@ -12,22 +12,22 @@
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">House Recipes</a>
+            <p class="navbar-brand">House Recipes</p>
             <div>
                 <ul class="navbar-nav mr-auto=" id="nav_bar">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" id="usrname" href="#"><strong id="name">{{ user.username }}</strong></a>
+                            <p class="nav-link" id="usrname"><strong id="name">{{ user.username }}</strong></p>
                         </li>
                     {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" id="allRecipes-link" href="{% url 'index' %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="Favoirtes-link" href="#">Favorites</a>
+                        <p class="nav-link" id="Favoirtes-link">Favorites</p>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="Cuisines-link" href="#">Categories</a>
+                        <p class="nav-link" id="Cuisines-link">Categories</p>
                     </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item">

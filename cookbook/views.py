@@ -32,13 +32,15 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            next_url = request.POST.get('next', reverse('index'))
+            return HttpResponseRedirect(next_url)
         else:
             return render(request, "cookbook/login.html", {
                 "message": "Invalid username and/or password."
             })
     else:
-        return render(request, "cookbook/login.html")
+        next_url = request.GET.get('next', '')
+        return render(request, "cookbook/login.html", {'next': next_url})
 
 
 def logout_view(request):
@@ -117,6 +119,13 @@ def add_recipe(request):
 
         # get recipe info from fetch
         title = request.POST.get("title")
+        title_lst = title.split(" ")
+        new_lst = []
+        for word in title_lst:
+            word = word[0].upper() + word[1:].lower()
+            new_lst.append(word)
+        title = " ".join(new_lst)
+
         user = request.user
         category = request.POST.get("category")
         category = category[0].upper() + category[1:].lower()
@@ -294,6 +303,7 @@ def update_recipe(request, title):
 
 
 @login_required
+@csrf_exempt
 def update_rating(request, name):
     """
     Allows authenticated users to update the rating of a specific recipe
@@ -367,7 +377,7 @@ def search_recipes(request):
             # if the recipe has the ingredients being searched, add it to the list of recipes to return
             if len(search_list) == 1:
                 for ingredient in recipe_ingredients_list:
-                    if search_list[0] in ingredient:
+                    if search_list[0].lower() in ingredient.lower():
                         matched_recipes.add(recipe.title)
 
             if set(search_list).issubset(set(recipe_ingredients_list)):
@@ -375,7 +385,7 @@ def search_recipes(request):
 
             # check if search matches a recipe title, if so add it to the matched recipes list
             if len(search_list) == 1:
-                if search_list[0] in recipe.title:
+                if search_list[0].lower() in recipe.title.lower():
                     matched_recipes.add(recipe.title)
 
         return JsonResponse({"matched_recipes": list(matched_recipes)})

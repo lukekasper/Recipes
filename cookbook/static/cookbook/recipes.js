@@ -706,7 +706,6 @@ function delete_recipe(title) {
         return response.json();
     })
     .then(data => {
-        console.log(data.message);
         if (data.message === "Recipe deleted.") {
             window.location.href = "/";
         }
@@ -776,7 +775,10 @@ function edit_view(subrec_list) {
     edit_UI(time_info);
     edit_UI(ing_list);
     edit_UI(dir_list);
-    edit_UI(notes_list);
+
+    if (notes_list) {
+        edit_UI(notes_list);
+    }
 
     // Add event listener to save recipe modifications
     const title = document.querySelector("#recipe-title").innerHTML;
@@ -874,9 +876,6 @@ function update_recipe() {
             // Add or remove li elements
             let difference = list.length - items.length;
 
-            console.log(list.length);
-            console.log(items.length);
-
             if (difference > 0) {
                 while (difference > 0) {
                     const new_li = document.createElement("li");
@@ -899,6 +898,7 @@ function update_recipe() {
 
                 if (line[0] == '-') {
                     line = line.slice(2);
+                    line = line.charAt(0).toUpperCase() + line.slice(1)
                 }
 
                 item.textContent = line;
@@ -941,7 +941,6 @@ function save_updates(title) {
         return response.json();
     })
     .then(data => {
-        console.log(data.message);
         if (data.message === "Recipe updated.") {
             window.location.href = "/";
         }
@@ -954,8 +953,13 @@ function save_updates(title) {
 
 function stringify_list(id) {
     const list_element = document.querySelector("#" + id);
-    const li_elements = list_element.querySelectorAll('li');
-    const list_content = Array.from(li_elements).map(li => li.textContent);
+    let list_content = [];
+
+    if (list_element) {
+        const li_elements = list_element.querySelectorAll('li');
+        list_content = Array.from(li_elements).map(li => li.textContent);
+    }
+
     return JSON.stringify(list_content);
 }
 
@@ -983,7 +987,6 @@ async function return_recipes() {
     // otherwise display error message to the user
     else {
         error = responseJSON.responseError;
-        console.log(error);
         return recipe_list
     }
 }
