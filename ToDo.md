@@ -4,7 +4,6 @@
 - [ ] Investigate old front end error display
 - [ ] Investigate enabling csrf tokens
 - [ ] Standardize JavaScript function names to camelcase
-- [ ] Add landing error page for trying to access parts of the app without logging in
 - [ ] Tweak login page css
 - [ ] Add error for if multiple recipes with same title are entered
 
