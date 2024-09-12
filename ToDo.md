@@ -7,6 +7,7 @@
 - [ ] Add hover boxes to describe search functionality
 - [ ] Add landing error page for trying to access parts of the app without logging in
 - [ ] Tweak login page css
+- [ ] Add error for if multiple recipes with same title are entered
 
 ## Application Deployment ToDos:
 - [ ] Containerize application
