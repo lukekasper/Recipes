@@ -6,6 +6,7 @@
 - [ ] Standardize JavaScript function names to camelcase
 - [ ] Add hover boxes to describe search functionality
 - [ ] Add landing error page for trying to access parts of the app without logging in
+- [ ] Tweak login page css
 
 ## Application Deployment ToDos:
 - [ ] Containerize application
