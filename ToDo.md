@@ -5,6 +5,7 @@
 - [ ] Investigate enabling csrf tokens
 - [ ] Standardize JavaScript function names to camelcase
 - [ ] Add hover boxes to describe search functionality
+- [ ] Add landing error page for trying to access parts of the app without logging in
 
 ## Application Deployment ToDos:
 - [ ] Containerize application
