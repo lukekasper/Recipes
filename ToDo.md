@@ -4,7 +4,6 @@
 - [ ] Investigate old front end error display
 - [ ] Investigate enabling csrf tokens
 - [ ] Standardize JavaScript function names to camelcase
-- [ ] Tweak login page css
 - [ ] Add error for if multiple recipes with same title are entered
 
 ## Application Deployment ToDos:
