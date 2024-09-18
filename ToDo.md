@@ -5,6 +5,7 @@
 - [ ] Investigate enabling csrf tokens
 - [ ] Standardize JavaScript function names to camelcase
 - [ ] Add error for if multiple recipes with same title are entered
+  - [ ] Added logic check, but error handling on front end seems broken
 
 ## Application Deployment ToDos:
 - [ ] Containerize application
