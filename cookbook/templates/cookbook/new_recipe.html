@@ -10,18 +10,19 @@
     </div>
 
     <div class="outer">
+        <p class="error-message"></p>
         <form method="post" id="new_recipe-form">
             {% csrf_token %}
             <div class="new_recipe-entry">
                 <p class="container">
                     <span class="label">Title: </span>
                     <span class="new_recipe-info" id="title_entry">
-                        <input type="text" name="title" maxlength="50" required="" id="id_title" class="input_width">
+                        <input type="text" name="title" maxlength="50" required id="id_title" class="input_width">
                     </span>
                 </p>
                 <p class="container">
                     <span class="label">Ingredients: </span>
-                    <textarea class="new_recipe-info" id="ingredients_entry" name="ingredients"></textarea>
+                    <textarea class="new_recipe-info" id="ingredients_entry" required name="ingredients"></textarea>
                 </p>
                 <p id="cooking_container" class="container">
                     <span id="instructions_label" class="label">Cooking Instructions: </span>
@@ -30,7 +31,7 @@
                 <p class="container">
                     <span class="label">Category: </span>
                     <span class="new_recipe-info" id="category_entry">
-                        <input type="text" name="category" maxlength="50" required="" id="id_category" class="input_width">
+                        <input type="text" name="category" maxlength="50" required id="id_category" class="input_width">
                     </span>
                 </p>
                 <p class="container">
@@ -42,14 +43,14 @@
                 <p class="container">
                     <span class="label">Cooktime: </span>
                     <span class="new_recipe-info" id="cooktime_entry">
-                        <input type="text" name="cooktime" maxlength="50" required="" id="id_cooktime" class="input_width">
+                        <input type="text" name="cooktime" maxlength="50" required id="id_cooktime" class="input_width">
                     </span>
                 </p>
                 <p class="container">
                     <span class="label">Additional Notes: </span>
                     <textarea class="new_recipe-info" id="note_entry"></textarea>
                 </p>
-                <button class="btn btn-primary" id="new_recipe-button">Add Recipe</button>
+                <button class="btn btn-primary" id="new_recipe-button" type="submit">Add Recipe</button>
             </div>
         </form>
     </div>

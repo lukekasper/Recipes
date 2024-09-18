@@ -126,6 +126,11 @@ def add_recipe(request):
             new_lst.append(word)
         title = " ".join(new_lst)
 
+        if Recipe.objects.filter(title=title).exists():
+            print(title)
+            error_message = "Recipe with this name already exists!  Please choose a new name."
+            return JsonResponse({"error": error_message}, status=400)
+
         user = request.user
         category = request.POST.get("category")
         category = category[0].upper() + category[1:].lower()
@@ -230,12 +235,13 @@ def get_recipe(request, title):
 
 
 @login_required
-def delete_recipe(request, title):
+def delete_recipe(_, title):
     """
     Deletes recipe from database based on its title.
     """
 
     try:
+        print(title)
         recipe = Recipe.objects.get(title=title)
         recipe.delete()
         return JsonResponse({"message": "Recipe deleted."}, status=200)
@@ -426,7 +432,7 @@ def my_recipes(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
-def cuisines(request):
+def cuisines(_):
     """
     Retrieves a list of unique cuisines from the database.
     It goes through all the recipes and extracts their categories (cuisines).
