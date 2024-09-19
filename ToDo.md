@@ -6,7 +6,9 @@
 - [ ] Fix static img src pathways
 
 ## Application Deployment ToDos:
-- [ ] Containerize application
+- [ ] Install Heroku CLI
+- [ ] Enable settings.py commented code
+- [ ] Install dj_database_url
 - [ ] Configure gunicorn server
 - [ ] Configure MySQL database
 - [ ] Host containerized application and database on AWS free tier system
