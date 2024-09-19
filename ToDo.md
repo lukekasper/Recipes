@@ -1,9 +1,9 @@
 ## Application Code ToDos:
 - [ ] Standardize fetch calls
 - [ ] Remove unecessary POST request for search function and switch to GET with query params
-- [ ] Investigate old front end error display
 - [ ] Investigate enabling csrf tokens
 - [ ] Standardize JavaScript function names to camelcase
+- [ ] Fix static img src pathways
 
 ## Application Deployment ToDos:
 - [ ] Containerize application
