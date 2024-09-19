@@ -570,7 +570,7 @@ def remove_comment(request, id):
     try:
         if Comment.objects.get(id=id):
             comment = Comment.objects.get(id=id)
-            if comment.user != request.user:  # Assuming you have an 'author' field in the Comment model
+            if comment.user != request.user:
                 return JsonResponse({"message": "You are not authorized to delete this comment."}, status=403)
             comment.delete()
         return JsonResponse({"message": "Comment Removed."}, status=204)

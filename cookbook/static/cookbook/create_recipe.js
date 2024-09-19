@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // run when form is submitted
     document.querySelector('#new_recipe-form').addEventListener('submit', (event) => new_recipe(event));
+    document.querySelector('#search_bar').style.backgroundColor = "transparent";
+    document.querySelector('#search_box').placeholder = "Search disabled on this page.";
+
 });
 
 async function new_recipe(event) {
@@ -13,46 +16,46 @@ async function new_recipe(event) {
     notes_list = process_list(document.querySelector('#note_entry').value);
 
     // Assemble form data
-    if (validateForm()) {
-        let formData = new FormData();
-        formData.append('title', document.querySelector('#id_title').value);
-        formData.append('image', document.querySelector('#id_image').files[0]);
-        formData.append('category', document.querySelector('#id_category').value);
-        formData.append('cooktime', document.querySelector('#id_cooktime').value);
-        formData.append('ingredients', JSON.stringify(ingredients_list));
-        formData.append('instructions', JSON.stringify(directions_list));
-        formData.append('notes', JSON.stringify(notes_list));
+    // if (validateForm()) {
+    let formData = new FormData();
+    formData.append('title', document.querySelector('#id_title').value);
+    formData.append('image', document.querySelector('#id_image').files[0]);
+    formData.append('category', document.querySelector('#id_category').value);
+    formData.append('cooktime', document.querySelector('#id_cooktime').value);
+    formData.append('ingredients', JSON.stringify(ingredients_list));
+    formData.append('instructions', JSON.stringify(directions_list));
+    formData.append('notes', JSON.stringify(notes_list));
 
-        const options = {
-            method: 'POST',
-            body: formData
-        };
+    const options = {
+        method: 'POST',
+        body: formData
+    };
 
-        // Send POST request to back end
-        fetch('/add_recipe', options)
+    // Send POST request to back end
+    fetch('/add_recipe', options)
 
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(errorData => {
-                    throw new Error(errorData.error);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.message === "Recipe added.") {
-                window.location.href = "/";
-            }
-        })
-        .catch(error => {
-            console.error('Error: ', error);
-            document.querySelector('.error-message').innerHTML = error.message;
-        });
-    }
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.error);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.message === "Recipe added.") {
+            window.location.href = "/";
+        }
+    })
+    .catch(error => {
+        console.error('Error: ', error);
+        document.querySelector('.error-message').innerHTML = error.message;
+    });
+    // }
 
-    else {
-        alert('Please fill out all required fields.');
-    }
+    // else {
+    //     alert('Please fill out all required fields.');
+    // }
 }
 
 // Process input form lists
@@ -78,19 +81,19 @@ function process_list(str_list) {
     return list;
 }
 
-// Function to check if all required fields are filled
-function validateForm() {
-    let isValid = true;
-    const requiredFields = document.querySelectorAll('[required]');
+// // Function to check if all required fields are filled
+// function validateForm() {
+//     let isValid = true;
+//     const requiredFields = document.querySelectorAll('[required]');
 
-    requiredFields.forEach(field => {
-        if (!field.value) {
-            isValid = false;
-            field.classList.add('error'); // Add a class to highlight the error
-        } else {
-            field.classList.remove('error');
-        }
-    });
+//     requiredFields.forEach(field => {
+//         if (!field.value) {
+//             isValid = false;
+//             field.classList.add('error'); // Add a class to highlight the error
+//         } else {
+//             field.classList.remove('error');
+//         }
+//     });
 
-    return isValid;
-}
+//     return isValid;
+// }
