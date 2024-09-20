@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = False
 
 #ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ["house-recipes-c027ea0d2288.herokuapp.com", "127.0.0.1"]
+ALLOWED_HOSTS = ["Recipes-c027ea0d2288.herokuapp.com", "127.0.0.1"]
 
 LOGIN_URL = '/login'
 
@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cookbook'
+    'app'
 ]
 
 MIDDLEWARE = [
@@ -88,10 +88,10 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-#db_from_env = dj_database_url.config(conn_max_age=600)
-#DATABASES['default'].update(db_from_env)
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
-AUTH_USER_MODEL = "cookbook.User"
+AUTH_USER_MODEL = "app.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

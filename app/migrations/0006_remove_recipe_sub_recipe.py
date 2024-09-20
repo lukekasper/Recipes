@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cookbook', '0005_comment'),
+        ('app', '0005_comment'),
     ]
 
     operations = [
