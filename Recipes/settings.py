@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = False
 
 #ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ["Recipes-c027ea0d2288.herokuapp.com", "127.0.0.1"]
+ALLOWED_HOSTS = ["house-recipes-c027ea0d2288.herokuapp.com", "127.0.0.1"]
 
 LOGIN_URL = '/login'
 
