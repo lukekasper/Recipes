@@ -21,7 +21,7 @@ class User(AbstractUser):
 
 class Recipe(models.Model):
     """
-    Represents a recipe entry into the app"
+    Represents a recipe entry into the cookbook"
     """
     user = models.ForeignKey("User", on_delete=models.CASCADE, null=True, related_name="recipes")
     title = models.CharField(max_length=50, null=True)

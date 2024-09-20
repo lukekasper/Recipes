@@ -35,12 +35,12 @@ def login_view(request):
             next_url = request.POST.get('next', reverse('index'))
             return HttpResponseRedirect(next_url)
         else:
-            return render(request, "app/login.html", {
+            return render(request, "cookbook/login.html", {
                 "message": "Invalid username and/or password."
             })
     else:
         next_url = request.GET.get('next', '')
-        return render(request, "app/login.html", {'next': next_url})
+        return render(request, "cookbook/login.html", {'next': next_url})
 
 
 def logout_view(request):
@@ -69,7 +69,7 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "app/register.html", {
+            return render(request, "cookbook/register.html", {
                 "message": "Passwords must match."
             })
 
@@ -78,20 +78,20 @@ def register(request):
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
-            return render(request, "app/register.html", {
+            return render(request, "cookbook/register.html", {
                 "message": "Username already taken."
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "app/register.html")
+        return render(request, "cookbook/register.html")
 
 
 def index(request):
     """
     Renders the index template (Home page).
     """
-    return render(request, "app/index.html")
+    return render(request, "cookbook/index.html")
 
 
 @login_required
@@ -101,14 +101,14 @@ def new_recipe(request):
     creating a new recipe. The view is protected by the `@login_required` decorator, which
     ensures that only authenticated users can access the form.
     """
-    return render(request, "app/new_recipe.html")
+    return render(request, "cookbook/new_recipe.html")
 
 
 @login_required
 @csrf_exempt
 def add_recipe(request):
     """
-    Allows authenticated users to add a new recipe to the app by
+    Allows authenticated users to add a new recipe to the cookbook by
     submitting a POST request. The recipe information, including title, category, cooktime,
     image, ingredients, directions, and optional notes, is extracted from the request data.
     A new `Recipe` model instance is created and saved to the database with the provided
