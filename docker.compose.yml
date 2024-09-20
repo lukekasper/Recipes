@@ -17,7 +17,7 @@ services:
   web:
     build: .
     volumes:
-      - .:/cookbook
+      - .:/app
     ports:
       - "8000:8000"
     depends_on:

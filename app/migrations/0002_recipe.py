@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cookbook', '0001_initial'),
+        ('app', '0001_initial'),
     ]
 
     operations = [
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
                 ('note', models.CharField(blank=True, max_length=500)),
                 ('rating', models.IntegerField(default=0, validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(5)])),
-                ('sub_recipe', models.ManyToManyField(blank=True, related_name='recipes_contain', to='cookbook.Recipe')),
+                ('sub_recipe', models.ManyToManyField(blank=True, related_name='recipes_contain', to='app.Recipe')),
                 ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='recipes', to=settings.AUTH_USER_MODEL)),
             ],
         ),
