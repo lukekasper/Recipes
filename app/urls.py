@@ -1,4 +1,7 @@
-from django.urls import path, include
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+
 from . import views
 
 urlpatterns = [
@@ -16,7 +19,9 @@ urlpatterns = [
     path("search_recipes", views.search_recipes, name="search_recipes"),
     path("my_recipes", views.my_recipes, name="my_recipes"),
     path("cuisines", views.cuisines, name="cuisines"),
+    path("meals", views.meals, name="meals"),
     path("cuisine_recipes/<str:cuisine>", views.cuisine_recipes, name="cuisine_recipes"),
+    path("meal_recipes/<str:meal>", views.meal_recipes, name="meal_recipes"),
     path("favorites", views.favorites, name="favorites"),
     path("update_favorites/<str:title>", views.update_favorites, name="update_favorites"),
     path("add_comment/<str:title>", views.add_comment, name="add_comment"),
@@ -24,3 +29,6 @@ urlpatterns = [
     path("delete_recipe/<str:title>", views.delete_recipe, name="delete_recipe"),
     path("update_recipe/<str:title>", views.update_recipe, name="update_recipe")
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

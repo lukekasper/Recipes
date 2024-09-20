@@ -1,3 +1,7 @@
+.navbar-custom {
+    background-color: #ACE1AF;
+}
+
 h3 {
     padding: 15px;
     margin-bottom: 20px;
@@ -22,7 +26,8 @@ h3 {
 
 #recipes-title {
     float: left;
-    width: 170px;
+    width: 240px;
+    font-family: monaco,Consolas,Lucida Console,monospace;
 }
 
 #new_recipe-link {
@@ -145,7 +150,7 @@ hr {
 #search_bar {
     position: absolute;
     font-size: 17px;
-    margin-top: 4px;
+    margin-top: 24px;
     border: solid;
     right: 12px;
     width: 300px;
@@ -158,6 +163,10 @@ hr {
 
 #nav_bar {
     width: 100vw;
+}
+
+.nav-link {
+    margin-top: 20px;
 }
 
 .search-button img {
@@ -219,7 +228,7 @@ h4 {
     display: flex;
     width: 38%;
     padding: 10px;
-    background-color: WhiteSmoke;
+    background-color: #ACE1AF;
     border-radius: 10px;
     height: 220px;
 }
@@ -489,7 +498,7 @@ h4 {
 
 #search-help {
     margin-top: 38px;
-    margin-left: 100px;
+    margin-left: 30px;
 }
 
 .login-container {
@@ -509,4 +518,9 @@ h4 {
     margin-left: 15px;
     font-weight: bold;
     font-size: 18px;
+}
+
+#logo {
+    width: 150px;
+    height: 90px;
 }

@@ -127,13 +127,15 @@ def add_recipe(request):
         title = " ".join(new_lst)
 
         if Recipe.objects.filter(title=title).exists():
-            print(title)
             error_message = "Recipe with this name already exists!  Please choose a new name."
             return JsonResponse({"error": error_message}, status=400)
 
         user = request.user
         category = request.POST.get("category")
         category = category[0].upper() + category[1:].lower()
+
+        meal = request.POST.get("meal")
+        meal = meal[0].upper() + meal[1:].lower()
 
         cooktime = request.POST.get("cooktime")
 
@@ -153,7 +155,7 @@ def add_recipe(request):
 
         # create recipe
         recipe = Recipe(user=user, title=title, ingredients=ingredients_str, instructions=directions, category=category,
-                        image=image, cooktime=cooktime)
+                        meal=meal, image=image, cooktime=cooktime)
 
         # add notes to recipe model if notes were uploaded, otherwise leave blank
         if request.POST.get("notes", False):
@@ -226,7 +228,6 @@ def get_recipe(request, title):
             if recipe in Recipe.objects.filter(user=request.user):
                 remove_flag = "True"
 
-
         return JsonResponse({"recipe": recipe.serialize(), "favorite_flag": favorite_flag, "remove_flag": remove_flag})
 
     # return error code if any other exception occurs
@@ -241,7 +242,6 @@ def delete_recipe(_, title):
     """
 
     try:
-        print(title)
         recipe = Recipe.objects.get(title=title)
         recipe.delete()
         return JsonResponse({"message": "Recipe deleted."}, status=200)
@@ -268,8 +268,10 @@ def update_recipe(request, title):
             category = request.POST.get("category")
             category = category[0].upper() + category[1:].lower()
 
-            cooktime = request.POST.get("cooktime")
+            meal = request.POST.get("meal")
+            meal = meal[0].upper() + meal[1:].lower()
 
+            cooktime = request.POST.get("cooktime")
 
             # add ingredients and directions
             ingredients = list(request.POST.get("ingredients").split(","))
@@ -290,6 +292,7 @@ def update_recipe(request, title):
             recipe.ingredients = ingredients_str
             recipe.instructions = instructions
             recipe.category = category
+            recipe.meal = meal
             recipe.cooktime = cooktime
             recipe.note = notes
             recipe.save()
@@ -303,7 +306,7 @@ def update_recipe(request, title):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
         
-     # For other request methods (e.g., GET, PUT, DELETE, etc.), return HTTP 405 Method Not Allowed
+    # For other request methods (e.g., GET, PUT, DELETE, etc.), return HTTP 405 Method Not Allowed
     error_message = "Only POST method is allowed for this URL."
     return HttpResponseNotAllowed(permitted_methods=["POST"], content=error_message)
 
@@ -454,6 +457,28 @@ def cuisines(_):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+def meals(_):
+    """
+    Retrieves a list of unique meals from the database.
+    It goes through all the recipes and extracts their meal type.
+    The unique meals are collected in a list and returned as a JSON response.
+    """
+    # try loading cuisines
+    try:
+
+        recipes = Recipe.objects.all()
+        meals_list = set()
+
+        for recipe in recipes:
+            meals_list.add(recipe.meal)
+
+        return JsonResponse({"list": list(meals_list)})
+
+    # return error code if any other exception occurs
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
 def cuisine_recipes(request, cuisine):
     """
     Retrieves all of the recipes of a specific cuisine from the database. The cuisine
@@ -469,6 +494,27 @@ def cuisine_recipes(request, cuisine):
 
         # .serialize() creates a text string for json object
         return JsonResponse({"cuisine_recipes": [recipe.serialize() for recipe in recipes]})
+
+    # return error code if any other exception occurs
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+def meal_recipes(request, meal):
+    """
+    Retrieves all of the recipes of a specific meal type from the database. The meal
+    is specified in the URL as a parameter. The recipes are ordered by their timestamp in descending order.
+    The view returns a JSON response containing the requested recipes.
+    The start and end parameters supplied in the url are used to paginate the response.
+    """
+    # try loading cuisine recipes
+    try:
+        recipes = Recipe.objects.filter(meal=meal)
+        recipes = recipes.order_by("-timestamp").all()
+        recipes = paginate_recipes(request, recipes)
+
+        # .serialize() creates a text string for json object
+        return JsonResponse({"meal_recipes": [recipe.serialize() for recipe in recipes]})
 
     # return error code if any other exception occurs
     except Exception as e:

@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // default load all recipes
-    load_recipes(user='', cuisine='');
+    load_recipes(user='', cuisine='', meal='');
 
     // run when username is clicked
     if (document.querySelector('#usrname')) {
         document.querySelector('#usrname').addEventListener('click', () => {
             const usrname = document.querySelector('#name').innerHTML;
-            load_recipes(user=usrname, cuisine='');
+            load_recipes(user=usrname, cuisine='', meal='');
             //history.pushState({}, '', "/" + usrname);
         });
     }
@@ -15,6 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // run when cuisines is clicked
     document.querySelector('#Cuisines-link').addEventListener('click', () => {
         generate_page('Cuisines', '/cuisines', '#cuisines');
+        //history.pushState({}, '', "/categories");
+    });
+
+    // run when meals is clicked
+    document.querySelector('#Meals-link').addEventListener('click', () => {
+        generate_page('Meals', '/meals', '#meals');
         //history.pushState({}, '', "/categories");
     });
 
@@ -44,7 +50,7 @@ function generate_page(title, api_path, id) {
     // update page title
     document.querySelector("#recipes-title").innerHTML = title;
 
-     // send API request to get cuisine info
+    // send API request to get cuisine info
     fetch(`${api_path}`)
     .then(response => {
         if (!response.ok) {
@@ -62,10 +68,17 @@ function generate_page(title, api_path, id) {
         if (title == "Cuisines") {
             document.querySelector('#cuisines-view').style.display = 'block';
             document.querySelector('#favorites-view').style.display = 'none';
+            document.querySelector('#meals-view').style.display = 'none';
+        }
+        else if (title == "Meals") {
+            document.querySelector('#cuisines-view').style.display = 'none';
+            document.querySelector('#favorites-view').style.display = 'none';
+            document.querySelector('#meals-view').style.display = 'block';
         }
         else {
             document.querySelector('#cuisines-view').style.display = 'none';
             document.querySelector('#favorites-view').style.display = 'block';
+            document.querySelector('#meals-view').style.display = 'none';
         }
 
         // clean div
@@ -74,8 +87,9 @@ function generate_page(title, api_path, id) {
         data.list.forEach(object => {
 
             // set the content depending upon search
+            console.log(object);
             let content = object.title;
-            if (title == "Cuisines") {
+            if (title == "Cuisines" || title == "Meals") {
                 content = object;
             }
 
@@ -89,7 +103,11 @@ function generate_page(title, api_path, id) {
 
             if (title == "Cuisines") {
                 // load all recipes with that category
-                element.addEventListener('click', () => load_recipes(user='', cuisine=content));
+                element.addEventListener('click', () => load_recipes(user='', cuisine=content, meal=''));
+            }
+            if (title == "Meals") {
+                // load all recipes with that category
+                element.addEventListener('click', () => load_recipes(user='', cuisine='', meal=content));
             }
             else {
                 // load that recipes page when name is clicked
@@ -102,7 +120,7 @@ function generate_page(title, api_path, id) {
     });
 }
 
-function load_recipes(user, cuisine) {
+function load_recipes(user, cuisine, meal) {
 
     // clean errors
     //document.querySelector("#query_error").innerHTML = '';
@@ -130,6 +148,9 @@ function load_recipes(user, cuisine) {
     else if (cuisine != '') {
         num_recipes = query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
     }
+    else if (meal != '') {
+        num_recipes = query_recipes('/meal_recipes/'+meal, 'meal_recipes', '"' + meal + '" Recipes', start, end);
+    }
     else {
         num_recipes = query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
     }
@@ -146,6 +167,9 @@ function load_recipes(user, cuisine) {
             }
             else if (cuisine != '') {
                 num_recipes = query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
+            }
+            else if (meal != '') {
+                num_recipes = query_recipes('/meal_recipes/'+meal, 'meal_recipes', '"' + meal + '" Recipes', start, end);
             }
             else {
                 num_recipes = query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
@@ -461,7 +485,7 @@ function update_rating(title, i) {
         // update avg rating html for selected recipe and reload recipes
         const recipe_title = title.replaceAll(" ", "_");
         document.querySelector('#'+recipe_title+'_rating').innerHTML = data.avg_rating;
-        load_recipes(user='', cuisine='');
+        load_recipes(user='', cuisine='', meal='');
     })
     .catch(error => {
         console.error('Netwrok Error: ', error);

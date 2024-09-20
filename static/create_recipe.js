@@ -21,6 +21,7 @@ async function new_recipe(event) {
     formData.append('title', document.querySelector('#id_title').value);
     formData.append('image', document.querySelector('#id_image').files[0]);
     formData.append('category', document.querySelector('#id_category').value);
+    formData.append('meal', document.querySelector('#id_meal').value);
     formData.append('cooktime', document.querySelector('#id_cooktime').value);
     formData.append('ingredients', JSON.stringify(ingredients_list));
     formData.append('instructions', JSON.stringify(directions_list));

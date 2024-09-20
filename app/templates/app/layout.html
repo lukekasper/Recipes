@@ -11,8 +11,9 @@
         {% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <p class="navbar-brand">House Recipes</p>
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+            {% load static %}
+            <img src="{% static 'images/logo.png' %}" id="logo">
             <div>
                 <ul class="navbar-nav mr-auto=" id="nav_bar">
                     {% if user.is_authenticated %}
@@ -27,7 +28,10 @@
                         <p class="nav-link" id="Favoirtes-link">Favorites</p>
                     </li>
                     <li class="nav-item">
-                        <p class="nav-link" id="Cuisines-link">Categories</p>
+                        <p class="nav-link" id="Cuisines-link">Cuisines</p>
+                    </li>
+                    <li class="nav-item">
+                        <p class="nav-link" id="Meals-link">Meals</p>
                     </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item">
@@ -45,7 +49,8 @@
                         <input style="width: 260px; border: none; background-color: transparent; border-radius: 15px;
                         padding-left: 10px;" id="search_box" type="text" placeholder=" Search recipes...">
                         <button class="search-button" id="search-button">
-                            <img src="https://www.kindacode.com/wp-content/uploads/2020/12/search.png">
+                            {% load static %}
+                            <img src="{% static 'images/search.jpeg' %}">
                         </button>
                     </li>
                 </ul>

@@ -28,6 +28,7 @@ class Recipe(models.Model):
     ingredients = models.CharField(max_length=5000, null=True, blank=True)
     instructions = models.CharField(max_length=50000, null=True, blank=True)
     category = models.CharField(max_length=50, null=True)
+    meal = models.CharField(max_length=50, null=True)
     image = models.ImageField(upload_to='images/', blank=True)
     cooktime = models.CharField(max_length=50, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -96,6 +97,7 @@ class Recipe(models.Model):
             "ingredients": self.ingredients,
             "instructions": self.instructions,
             "category": self.category,
+            "meal": self.meal,
             "image": self.image.url,
             "cooktime": self.cooktime,
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
