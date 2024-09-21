@@ -479,8 +479,8 @@ h4 {
 
 #help-box2 {
     position: absolute;
-    left: 330px;
-    top: 87px;
+    left: 380px;
+    top: 120px;
     height: 70px;
     width: 470px;
 }
@@ -499,7 +499,7 @@ h4 {
 
 #search-help {
     margin-top: 38px;
-    margin-left: 30px;
+    margin-left: 80px;
 }
 
 .login-container {

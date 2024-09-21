@@ -15,19 +15,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // run when cuisines is clicked
     document.querySelector('#Cuisines-link').addEventListener('click', () => {
         generate_page('Cuisines', '/cuisines', '#cuisines');
-        //history.pushState({}, '', "/categories");
     });
 
     // run when meals is clicked
     document.querySelector('#Meals-link').addEventListener('click', () => {
         generate_page('Meals', '/meals', '#meals');
-        //history.pushState({}, '', "/categories");
     });
 
     // run when favorites is clicked
     document.querySelector('#Favoirtes-link').addEventListener('click', () => {
         generate_page('My Favorites', '/favorites', '#favorites');
-        //history.pushState({}, '', "/favorites");
     });
 
     // run when search icon is clicked
@@ -50,10 +47,16 @@ function generate_page(title, api_path, id) {
     // update page title
     document.querySelector("#recipes-title").innerHTML = title;
 
+    console.log(api_path);
+
     // send API request to get cuisine info
     fetch(`${api_path}`)
     .then(response => {
         if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login page
+                window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
+            }
             throw new Error('Error: ' + response.statusText);
         }
         return response.json();
@@ -104,7 +107,7 @@ function generate_page(title, api_path, id) {
                 // load all recipes with that category
                 element.addEventListener('click', () => load_recipes(user='', cuisine=content, meal=''));
             }
-            if (title == "Meals") {
+            else if (title == "Meals") {
                 // load all recipes with that category
                 element.addEventListener('click', () => load_recipes(user='', cuisine='', meal=content));
             }
@@ -133,6 +136,7 @@ function load_recipes(user, cuisine, meal) {
     document.querySelector('#recipe-view').style.display = 'none';
     document.querySelector('#matched_recipes-view').style.display = 'none';
     document.querySelector('#cuisines-view').style.display = 'none';
+    document.querySelector('#meals-view').style.display = 'none';
     document.querySelector('#favorites-view').style.display = 'none';
 
     // clear all recipes html
@@ -185,7 +189,7 @@ async function query_recipes(api_path, key, title, start, end) {
 
     if (!responseJSON.responseError) {
 
-        // render a div for each post, displaying relevant info=
+        // render a div for each post, displaying relevant info
         const data = responseJSON.responseData;
 
         data[key].forEach(recipe => {
@@ -212,7 +216,7 @@ async function query_recipes(api_path, key, title, start, end) {
 function make_recipe_html(recipe) {
 
     // create an outer div for to contain image and post's info
-    const recipe_title = recipe.title.replaceAll(" ","_")
+    const recipe_title = recipe.title.replaceAll(" ","_");
 
     // create an outer div for to contain image and post's info
     const outerDiv = make_html_element('', 'outer-div_'+recipe_title, 'outer-div', 'div');
@@ -973,7 +977,6 @@ function save_updates(title) {
     };
 
     // send API request to update recipe content
-    console.log(title);
     fetch('/update_recipe/'+title, options)
 
     // Reload recipe page

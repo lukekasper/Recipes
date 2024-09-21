@@ -521,7 +521,6 @@ def meal_recipes(request, meal):
         return JsonResponse({"error": str(e)}, status=500)
 
 
-@login_required
 def favorites(request):
     """
     Allows authenticated users to retrieve the recipes they have
@@ -530,6 +529,9 @@ def favorites(request):
     """
     # try loading favorite recipes
     try:
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'User not authenticated'}, status=401)
+
         # get recipes favorited by signed in user
         recipes = request.user.favorites.all()
 
