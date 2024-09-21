@@ -1,5 +1,7 @@
 ## Application Code ToDos:
 - [ ] Ability to add notes if one is not included
+  - [ ] Create notes block always, but hide it when no notes are there
+  - [ ] During edit screen, show it and allow click activation
 - [ ] Dropdowns for Cuisine type
 - [ ] Standardize fetch calls
 - [ ] Remove unecessary POST request for search function and switch to GET with query params
