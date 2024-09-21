@@ -87,7 +87,6 @@ function generate_page(title, api_path, id) {
         data.list.forEach(object => {
 
             // set the content depending upon search
-            console.log(object);
             let content = object.title;
             if (title == "Cuisines" || title == "Meals") {
                 content = object;
@@ -570,9 +569,13 @@ async function load_recipe(title) {
         top_div.append(timestamp);
 
         // Split strings into lists
-        const ingredients_list = data.recipe.ingredients.split(',');
-        const directions_list = data.recipe.instructions.split(',');
-        const notes_list = data.recipe.note.split(',');
+        let ingredients_list = data.recipe.ingredients.replaceAll('","','";"');
+        let directions_list = data.recipe.instructions.replaceAll('","','";"');
+        let notes_list = data.recipe.note.replaceAll('","','";"');
+
+        ingredients_list = ingredients_list.split(';');
+        directions_list = directions_list.split(';');
+        notes_list = notes_list.split(';');
 
         // Make outer list html
         const ing_ul = make_html_element('', 'ing_ul', 'recipe_list_items', 'ul');

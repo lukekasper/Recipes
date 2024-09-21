@@ -12,9 +12,15 @@ async function new_recipe(event) {
     // Process lists
     event.preventDefault();
     ingredients_list = process_list(document.querySelector('#ingredients_entry').value);
-    directions_list = process_list(document.querySelector('#instructions_entry').value);
     notes_list = process_list(document.querySelector('#note_entry').value);
-
+    directions_list = process_list(document.querySelector('#instructions_entry').value);
+    proc_directions_list = [];
+    directions_list.forEach((direction) => {
+        if(direction.at(-1) != ".") {
+            direction.append(".");
+        }
+        proc_directions_list.append(direction);
+    }
     // Assemble form data
     // if (validateForm()) {
     let formData = new FormData();
@@ -24,7 +30,7 @@ async function new_recipe(event) {
     formData.append('meal', document.querySelector('#id_meal').value);
     formData.append('cooktime', document.querySelector('#id_cooktime').value);
     formData.append('ingredients', JSON.stringify(ingredients_list));
-    formData.append('instructions', JSON.stringify(directions_list));
+    formData.append('instructions', JSON.stringify(proc_directions_list));
     formData.append('notes', JSON.stringify(notes_list));
 
     const options = {
