@@ -11,16 +11,10 @@ async function new_recipe(event) {
 
     // Process lists
     event.preventDefault();
-    ingredients_list = process_list(document.querySelector('#ingredients_entry').value);
-    notes_list = process_list(document.querySelector('#note_entry').value);
-    directions_list = process_list(document.querySelector('#instructions_entry').value);
-    proc_directions_list = [];
-    directions_list.forEach((direction) => {
-        if(direction.at(-1) != ".") {
-            direction.append(".");
-        }
-        proc_directions_list.append(direction);
-    }
+    ingredients_list = process_list('ingredients_entry');
+    notes_list = process_list('note_entry');
+    directions_list = process_list('instructions_entry');
+
     // Assemble form data
     // if (validateForm()) {
     let formData = new FormData();
@@ -30,7 +24,7 @@ async function new_recipe(event) {
     formData.append('meal', document.querySelector('#id_meal').value);
     formData.append('cooktime', document.querySelector('#id_cooktime').value);
     formData.append('ingredients', JSON.stringify(ingredients_list));
-    formData.append('instructions', JSON.stringify(proc_directions_list));
+    formData.append('instructions', JSON.stringify(directions_list));
     formData.append('notes', JSON.stringify(notes_list));
 
     const options = {
@@ -66,9 +60,10 @@ async function new_recipe(event) {
 }
 
 // Process input form lists
-function process_list(str_list) {
+function process_list(id) {
 
     let list = [];
+    let str_list = document.querySelector('#' + id).value;
 
     // Split by ';' so user can input multiple items at once
     str_list = str_list.split(";");
@@ -80,6 +75,12 @@ function process_list(str_list) {
         if (item != " " && item != "") {
 
             let processed_item = item.charAt(0).toUpperCase() + item.slice(1);
+
+            if (id.includes("note") || id.includes("instruction")) {
+                if (processed_item.at(-1) != ".") {
+                    processed_item += ".";
+                }
+            }
 
             // Add item to the list capitalizing first letter
             list.push(processed_item);

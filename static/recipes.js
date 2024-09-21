@@ -929,6 +929,12 @@ function update_recipe() {
             items.forEach((item, index) => {
                 let line = list[index]
 
+                if (id.includes("note") || id.includes("dir")) {
+                    if (line.at(-1) != ".") {
+                            line += ".";
+                    }
+                }
+
                 if (line[0] == '-') {
                     line = line.slice(2);
                     line = line.charAt(0).toUpperCase() + line.slice(1)
@@ -940,6 +946,8 @@ function update_recipe() {
         else {
             element.innerHTML = text;
         }
+
+        document.querySelector("#text_edit").value = '';
     }
 }
 
@@ -953,6 +961,7 @@ function save_updates(title) {
 
     let formData = new FormData();
     formData.append('category', document.querySelector('#cat-info').innerHTML);
+    formData.append('meal', document.querySelector('#meal-info').innerHTML);
     formData.append('cooktime', document.querySelector('#time-info').innerHTML);
     formData.append('ingredients', ingredients_list);
     formData.append('instructions', directions_list);
@@ -964,6 +973,7 @@ function save_updates(title) {
     };
 
     // send API request to update recipe content
+    console.log(title);
     fetch('/update_recipe/'+title, options)
 
     // Reload recipe page
