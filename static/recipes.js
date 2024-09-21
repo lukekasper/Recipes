@@ -620,22 +620,28 @@ async function load_recipe(title) {
         })
 
         const category = make_html_element(data.recipe.category, 'cat-info', 'info', 'div');
+        const meal = make_html_element(data.recipe.meal, 'meal-info', 'info', 'div');
         const cooktime = make_html_element(data.recipe.cooktime, 'time-info', 'info', 'div');
 
         // Make box for category and time
         const cat_container = make_html_element('', 'cat-container', 'recipe-container', 'div');
+        const meal_container = make_html_element('', 'meal-container', 'recipe-container', 'div');
         const time_container = make_html_element('', 'time-container', 'recipe-container', 'div');
         const info_box = make_html_element('', 'recipe-info_box', '', 'div');
 
-        const cat_title = make_html_element('Category:', 'cat-title', 'title', 'div');
+        const cat_title = make_html_element('Cuisine:', 'cat-title', 'title', 'div');
+        const meal_title = make_html_element('Meal:', 'meal-title', 'title', 'div');
         const time_title = make_html_element('Cooktime:', 'time-title', 'title', 'div');
 
         cat_container.append(cat_title);
         cat_container.append(category);
+        meal_container.append(meal_title);
+        meal_container.append(meal);
         time_container.append(time_title);
         time_container.append(cooktime);
 
         info_box.append(cat_container);
+        info_box.append(meal_container);
         info_box.append(time_container);
 
         const box_div = make_html_element('', 'box_div', 'box_div', 'div');
