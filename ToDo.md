@@ -11,4 +11,4 @@
 - [ ] Memcacheing
 - [ ] Autocomplete search functionality
 - [ ] Click an logo is home screen
-- [ ] Enter runs search
+- [ ] 'Enter' key runs search
