@@ -39,7 +39,7 @@ def login_view(request):
                 "message": "Invalid username and/or password."
             })
     else:
-        next_url = request.GET.get('next', '')
+        next_url = request.GET.get('next', reverse('index'))
         return render(request, "app/login.html", {'next': next_url})
 
 
