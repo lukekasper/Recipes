@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // run when search icon is clicked
+    console.log('working');
+    console.log(document.querySelector('#search_box').value);
     document.querySelector('#search-button').addEventListener('click', search_recipes);
     if (document.querySelector('#search_box').value != '') {
         console.log('adding event listener');
