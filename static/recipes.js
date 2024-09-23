@@ -698,10 +698,12 @@ async function load_recipe(title) {
         document.querySelector("#recipe-info-lists").append(middle_div);
 
         // If notes exist, append a div for them
+        const notes_div = make_html_element('Notes:', 'notes_div', 'recipe_list_div', 'div');
+        notes_div.append(notes_ul);
+        document.querySelector("#recipe-info-lists").append(notes_div);
+
         if (notes_list.length != 1 || notes_list[0] != '[]') {
-            const notes_div = make_html_element('Notes:', 'notes_div', 'recipe_list_div', 'div');
-            notes_div.append(notes_ul);
-            document.querySelector("#recipe-info-lists").append(notes_div);
+            notes_div.style.display = "none";
         }
 
         // Widget to add/remove recipe from favorites
@@ -772,6 +774,8 @@ function edit_view(subrec_list) {
         const copy = subrec_el.cloneNode(true);
         subrec_el.replaceWith(copy);
     })
+
+    document.querySelector("#notes_div").style.display = "block";
 
     // Assign recipie contents to variables
     const edit_button = document.querySelector("#edit-button");
