@@ -7,5 +7,3 @@
 - [ ] Standardize JavaScript function names to camelcase
 - [ ] Memcacheing
 - [ ] Autocomplete search functionality
-- [ ] Click an logo is home screen
-- [ ] 'Enter' key runs search
