@@ -30,9 +30,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // run when search icon is clicked
     document.querySelector('#search-button').addEventListener('click', search_recipes);
     if (document.querySelector('#search_box').value != '') {
+        console.log('adding event listener');
         document.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
-              search_recipes();
+                console.log('enter pressed');
+                search_recipes();
             }
         });
     }
