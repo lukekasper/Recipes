@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // run when logo is clicked
+    document.querySelector('#logo').addEventListener('click', () => {
+        load_recipes(user='', cuisine='', meal='');
+    });
+
     // run when cuisines is clicked
     document.querySelector('#Cuisines-link').addEventListener('click', () => {
         generate_page('Cuisines', '/cuisines', '#cuisines');
@@ -29,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // run when search icon is clicked
     console.log('working');
-    console.log(document.querySelector('#search_box').value);
+    console.log(document.querySelector('#search_box').value.length);
     document.querySelector('#search-button').addEventListener('click', search_recipes);
     if (document.querySelector('#search_box').value != '') {
         console.log('adding event listener');
