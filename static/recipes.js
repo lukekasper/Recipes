@@ -32,17 +32,15 @@ document.addEventListener('DOMContentLoaded', function() {
         generate_page('My Favorites', '/favorites', '#favorites');
     });
 
-    // run when search icon is clicked
+    // run when search icon is clicked or enter is pressed
     document.querySelector('#search-button').addEventListener('click', search_recipes);
-    if (document.querySelector('#search_box').value.length == 0) {
-        console.log('adding event listener');
-        document.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                console.log('enter pressed');
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            if (document.querySelector('#search_box').value.length != 0) {
                 search_recipes();
             }
-        });
-    }
+        }
+    });
 });
 
 /////////////////////////////////////////////////////////////////////////////////
