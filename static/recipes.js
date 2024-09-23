@@ -702,7 +702,7 @@ async function load_recipe(title) {
         notes_div.append(notes_ul);
         document.querySelector("#recipe-info-lists").append(notes_div);
 
-        if (notes_list.length != 1 || notes_list[0] != '[]') {
+        if (notes_list.length == 1 && notes_list[0] == '[]') {
             notes_div.style.display = "none";
         }
 
