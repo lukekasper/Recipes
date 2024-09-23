@@ -1,7 +1,4 @@
 ## Application Code ToDos:
-- [ ] Ability to add notes if one is not included
-  - [ ] Create notes block always, but hide it when no notes are there
-  - [ ] During edit screen, show it and allow click activation
 - [ ] Add loading widget for recipe page
 - [ ] Dropdowns for Cuisine type
 - [ ] Standardize fetch calls
