@@ -525,3 +525,7 @@ h4 {
     width: 150px;
     height: 90px;
 }
+
+#logo:hover {
+    cursor: pointer;
+}
