@@ -1,3 +1,5 @@
+let spinner;
+
 document.addEventListener('DOMContentLoaded', function() {
 
     // Create Spinner object
@@ -14,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
         left: '50%', // Left position relative to parent
         position: 'absolute' // Element positioning
     };
-    const spinner = new Spinner(opts);
+    spinner = new Spinner(opts);
 
     // Default load all recipes
     load_recipes(user='', cuisine='', meal='');
