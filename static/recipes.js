@@ -1142,9 +1142,10 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
         console.error('Error:', error);
         responseJSON.responseError = error;
         return responseJSON
-    } finally {
-        hideSpinner(spinner);
-    }
+    } 
+    // finally {
+    //     hideSpinner(spinner);
+    // }
 }
 
 // PUT or POST requests
