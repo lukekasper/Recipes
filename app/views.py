@@ -236,23 +236,24 @@ def get_recipe(request, title):
 
 
 @login_required
-def delete_recipe(_, title):
+def delete_recipe(request, title):
     """
     Deletes recipe from database based on its title.
     """
+    if request.method == "DELETE":
+        try:
+            recipe = Recipe.objects.get(title=title)
+            recipe.delete()
+            return JsonResponse({"message": "Recipe deleted."}, status=200)
 
-    try:
-        recipe = Recipe.objects.get(title=title)
-        recipe.delete()
-        return JsonResponse({"message": "Recipe deleted."}, status=200)
+        except ObjectDoesNotExist:
+            return JsonResponse({"message": "Recipe not found."}, status=404)
 
-    except ObjectDoesNotExist:
-        return JsonResponse({"message": "Recipe not found."}, status=404)
-
-    # return error code if any other exception occurs
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
-
+        # return error code if any other exception occurs
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    error_message = "Only DELETE method is allowed for this URL."
+    return HttpResponseNotAllowed(permitted_methods=["DELETE"], content=error_message)
 
 @login_required
 @csrf_exempt
@@ -329,14 +330,15 @@ def update_rating(request, name):
             rating_dict = recipe.user_rating_dict()
             signed_user = request.user.username
             data = json.loads(request.body)
-            rating = data.get("rating")
+            rating = data.get("body")
+            rating = int(rating)
 
             # check if rating is an int from 1-5
             if not isinstance(rating, int) or rating < 1 or rating > 5:
                 return JsonResponse({"error": "Invalid rating. Rating must be an integer between 1 and 5."}, status=400)
 
             # either add new entry or update existing entry and save
-            rating_dict[signed_user] = data.get("rating")
+            rating_dict[signed_user] = rating
             recipe.user_rating = str(rating_dict)
 
             recipe.save()
@@ -356,7 +358,7 @@ def update_rating(request, name):
 
 @login_required
 @csrf_exempt
-def search_recipes(request):
+def search_recipes(_, title):
     """
     Allows authenticated users to search for recipes that contain specific
     ingredients or have titles that match the search query. The search query is provided in
@@ -366,13 +368,10 @@ def search_recipes(request):
     # get ingredients list and split into individual ingredients
     # try reading the json data
     try:
-        data = json.loads(request.body)
-        search = data.get("search")
-
         recipes = Recipe.objects.all()
         matched_recipes = set()
 
-        search_list = search.split(", ")
+        search_list = title.split(", ")
 
         # loop over all recipes
         for recipe in recipes:
@@ -594,7 +593,7 @@ def add_comment(request, title):
         user = request.user
         recipe = Recipe.objects.get(title=title)
         data = json.loads(request.body)
-        text = data.get("comment")
+        text = data.get("body")
 
         # create new comment object
         comment = Comment(text=text, user=user, recipe=recipe)
@@ -614,23 +613,26 @@ def remove_comment(request, id):
     authenticated user is the author of the comment. If so, the comment is deleted from the
     database. The view returns a JSON response indicating the status of the comment removal.
     """
-    # get comment by id and delete from database
-    try:
-        if Comment.objects.get(id=id):
-            comment = Comment.objects.get(id=id)
-            if comment.user != request.user:
-                return JsonResponse({"message": "You are not authorized to delete this comment."}, status=403)
-            comment.delete()
-        return JsonResponse({"message": "Comment Removed."}, status=204)
+    if request.method == 'DELETE':
+        # get comment by id and delete from database
+        try:
+            if Comment.objects.get(id=id):
+                comment = Comment.objects.get(id=id)
+                if comment.user != request.user:
+                    return JsonResponse({"message": "You are not authorized to delete this comment."}, status=403)
+                comment.delete()
+            return JsonResponse({"message": "Comment Removed."}, status=204)
 
-    # return error if comment does not exist
-    except ObjectDoesNotExist:
-        return JsonResponse({"message": "Comment not found."}, status=404)
+        # return error if comment does not exist
+        except ObjectDoesNotExist:
+            return JsonResponse({"message": "Comment not found."}, status=404)
 
-    # return error code if any other exception occurs
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
-
+        # return error code if any other exception occurs
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+        
+    error_message = "Only PUT DELETE is allowed for this URL."
+    return HttpResponseNotAllowed(permitted_methods=["DELETE"], content=error_message)
 
 def paginate_recipes(request, recipes):
     """

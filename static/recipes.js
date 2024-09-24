@@ -47,26 +47,17 @@ document.addEventListener('DOMContentLoaded', function() {
 ///////////////////////// ALL RECIPES HOME PAGE /////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
-function generate_page(title, api_path, id) {
+async function generate_page(title, api_path, id) {
 
     // update page title
     document.querySelector("#recipes-title").innerHTML = title;
 
-    console.log(api_path);
-
     // send API request to get cuisine info
-    fetch(`${api_path}`)
-    .then(response => {
-        if (!response.ok) {
-            if (response.status === 401) {
-                // Redirect to login page
-                window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
-            }
-            throw new Error('Error: ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
+    const responseJSON = await getData(api_path, 'GET');
+
+    if (!responseJSON.responseError) {
+
+        const data = responseJSON.responseData;
 
         // show cuisines view and hide all others
         document.querySelector('#all_recipes').style.display = 'none';
@@ -121,10 +112,7 @@ function generate_page(title, api_path, id) {
                 element.addEventListener('click', () => load_recipe(content));
             }
         });
-    })
-    .catch(error => {
-        console.error('Network Error: ', error);
-    });
+    }
 }
 
 function load_recipes(user, cuisine, meal) {
@@ -190,7 +178,7 @@ function load_recipes(user, cuisine, meal) {
 async function query_recipes(api_path, key, title, start, end) {
 
     // Send API request to get recipes
-    const responseJSON = await getData(api_path, 'start', start, 'end', end);
+    const responseJSON = await getData(api_path, 'GET', 'start', start, 'end', end);
 
     if (!responseJSON.responseError) {
 
@@ -207,13 +195,6 @@ async function query_recipes(api_path, key, title, start, end) {
         document.querySelector('#recipes-title').innerHTML = title;
 
         return data[key].length;
-    }
-
-    // display response error on front end
-    else {
-        const error = responseJSON.responseError;
-        //document.querySelector("#query_error").innerHTML = error;
-        return null
     }
 }
 
@@ -411,46 +392,26 @@ function make_comment_html(comment, title) {
     }
 }
 
-function remove_comment(comment, comment_p) {
+async function remove_comment(comment, comment_p) {
 
     // send API request to remove comment from backend
-    fetch(`/remove_comment/${comment.id}`)
-    .then(response => {
-        if (!response.ok) {
-          throw new Error('Error: ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(() => {
+    const responseJSON = await getData('/remove_comment/' + comment.id, 'DELETE');
+
+    if (!responseJSON.responseError) {
         comment_p.remove();
-    })
-    .catch(error => {
-        console.error('Netwrok Error: ', error);
-    });
+    }
 }
 
 // update comment model on backend
-function add_comment(comment_txt, title) {
+async function add_comment(comment_txt, title) {
 
-    fetch('/add_comment/'+title, {
-        method: 'POST',
-        body: JSON.stringify({
-            comment: `${comment_txt}`
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error: ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
+    const responseJSON = await postData('/add_comment/'+title, JSON.stringify(comment_txt), 'POST')
+
+    if (!responseJSON.responseError) {
+        const data = responseJSON.responseData;
         make_comment_html(data.comment, title);
         document.querySelector('#add_comment-box_'+title).value = '';
-    })
-    .catch(error => {
-        console.error('Netwrok Error: ', error);
-    });
+    }
 }
 
 // make standard html text element
@@ -473,31 +434,18 @@ function make_image_html(image_src, id) {
 }
 
 //update rating in django model and style css accordingly
-function update_rating(title, i) {
+async function update_rating(title, i) {
 
-    // update the rating on the backend
-    fetch('/update_rating/'+title, {
-        method: 'PUT',
-        body: JSON.stringify({
-            rating: i+1
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error: ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
+    const responseJSON = await postData('/update_rating/'+title, JSON.stringify(i+1), 'PUT')
+
+    if (!responseJSON.responseError) {
+        const data = responseJSON.responseData;
 
         // update avg rating html for selected recipe and reload recipes
         const recipe_title = title.replaceAll(" ", "_");
         document.querySelector('#'+recipe_title+'_rating').innerHTML = data.avg_rating;
         load_recipes(user='', cuisine='', meal='');
-    })
-    .catch(error => {
-        console.error('Netwrok Error: ', error);
-    });
+    }
 }
 
 // color stars when mouse over
@@ -741,22 +689,18 @@ async function load_recipe(title) {
 }
 
 // Delete recipe from database
-function delete_recipe(title) {
-    fetch('/delete_recipe/'+title)
-    .then(response => {
-        if (!response.ok) {
-          throw new Error('Error: ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
+async function delete_recipe(title) {
+
+    const responseJSON = await getData('/delete_recipe/'+title, 'DELETE');
+
+    if (!responseJSON.responseError) {
+
+        const data = responseJSON.responseData;
+
         if (data.message === "Recipe deleted.") {
             window.location.href = "/";
         }
-    })
-    .catch(error => {
-        console.error('Netwrok Error: ', error);
-    });
+    }
 }
 
 function changeColorToBlue() {
@@ -965,7 +909,7 @@ function update_recipe() {
 }
 
 // Make PUT request to backend to update recipe content
-function save_updates(title) {
+async function save_updates(title) {
 
     // Get info from recipe list elements
     const ingredients_list = stringify_list('ing_ul');
@@ -980,30 +924,16 @@ function save_updates(title) {
     formData.append('instructions', directions_list);
     formData.append('notes', notes_list);
 
-    const options = {
-        method: 'POST',
-        body: formData
-    };
-
     // send API request to update recipe content
-    fetch('/update_recipe/'+title, options)
+    const responseJSON = await postData('/update_recipe/'+title, formData, 'POST')
 
-    // Reload recipe page
-    .then(response => {
-        if (!response.ok) {
-          throw new Error('Error: ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
+    if (!responseJSON.responseError) {
+        const data = responseJSON.responseData;
+
         if (data.message === "Recipe updated.") {
             window.location.href = "/";
         }
-    })
-    .catch(error => {
-        console.error('Netwrok Error: ', error);
-    });
-
+    }
 }
 
 function stringify_list(id) {
@@ -1027,7 +957,7 @@ async function return_recipes() {
 
     let recipe_list = [];
 
-    const responseJSON = await getData('/all_recipes');
+    const responseJSON = await getData('/all_recipes', 'GET');
 
     if (responseJSON.responseError.length === 0) {
 
@@ -1047,21 +977,13 @@ async function return_recipes() {
 }
 
 // update user's favorite recipes
-function update_favorites(title) {
+async function update_favorites(title) {
 
     // send API request to update user's favorite recipes list
-    fetch('/update_favorites/'+title, {
-        method: 'PUT'
-    })
+    const responseJSON = await postData('/update_recipe/'+title, '', 'PUT')
 
-    // reload recipe page
-    .then(response => {
-        if (!response.ok) {
-          throw new Error('Error: ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
+    if (!responseJSON.responseError) {
+        const data = responseJSON.responseData;
 
         // update button logic to opposite state
         if (data.flag == "True") {
@@ -1070,10 +992,7 @@ function update_favorites(title) {
         else {
             document.querySelector('#favorites-button').innerHTML = "Add to Favorites";
         }
-    })
-    .catch(error => {
-        console.error('Netwrok Error: ', error);
-    });
+    }
 }
 
 // trim off extra characters
@@ -1091,25 +1010,17 @@ function trim_chars(text) {
 }
 
 // send API request to search for recipes with listed ingredients
-function search_recipes() {
+async function search_recipes() {
 
     // get list of ingredients from search input box
     const search = document.querySelector("#search_box").value;
 
     // send API request to get recipes with listed ingredients
-    fetch('/search_recipes', {
-        method: 'POST',
-        body: JSON.stringify({
-            search: `${search}`
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-          throw new Error('Error: ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
+    const responseJSON = await getData('/search_recipes/'+search, 'GET');
+
+    if (!responseJSON.responseError) {
+
+        const data = responseJSON.responseData;
 
         // show matched recipes view
         document.querySelector('#all_recipes').style.display = 'none';
@@ -1158,15 +1069,12 @@ function search_recipes() {
 
         // clear search bar
         document.querySelector('#search_box').value = '';
-    })
-    .catch(error => {
-        console.error('Netwrok Error: ', error);
-    });
+    }
 }
 
 ////////////////////////// Asynchronous API call //////////////////////////
-// GET request
-async function getData(url, param1Name = '', data1 = '', param2Name = '', data2 = '') {
+// GET or DELET request
+async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name = '', data2 = '') {
     let responseJSON = {responseData: '', responseError: ''};
 
     // Append the data as a query parameter to the URL
@@ -1180,7 +1088,7 @@ async function getData(url, param1Name = '', data1 = '', param2Name = '', data2 
 
     try {
         const response = await fetch(urlWithParams, {
-            method: 'GET',
+            method: apiMethod,
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -1188,11 +1096,12 @@ async function getData(url, param1Name = '', data1 = '', param2Name = '', data2 
 
         // used to handle HTTP Error Responses
         if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login page
+                window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
+            }
             // If the response is not OK, handle the error
-            const errorMessage = await response.text();
-            console.error('Error:', errorMessage);
-            responseJSON.responseError = errorMessage;
-            return responseJSON
+            throw new Error('Error: ', response.statusText);
         }
 
         // if response is ok, return the data
@@ -1201,7 +1110,42 @@ async function getData(url, param1Name = '', data1 = '', param2Name = '', data2 
     }
     catch (error) {
         // Handle the error that occurred during the asynchronous operation
-        console.error('Network error:', error);
+        console.error('Error:', error);
+        responseJSON.responseError = error;
+        return responseJSON
+    }
+}
+
+// PUT or POST requests
+async function postData(url, data, apiMethod) {
+    let responseJSON = {responseData: '', responseError: ''};
+    try {
+
+            const response = await fetch(url, {
+                method: apiMethod,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: data
+            });
+
+            // used to handle HTTP Error Responses
+            if (!response.ok) {
+                if (response.status === 401) {
+                    // Redirect to login page
+                    window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
+                }
+                 // If the response is not OK, handle the error
+                throw new Error('Error: ', response.statusText);
+            }
+
+            // if response is ok, return the data
+            responseJSON.responseData = await response.json();
+            return responseJSON
+    }
+    catch (error) {
+        // Handle the error that occurred during the asynchronous operation
+        console.error('Error:', error);
         responseJSON.responseError = error;
         return responseJSON
     }
