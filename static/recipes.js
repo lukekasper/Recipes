@@ -1,3 +1,5 @@
+import {Spinner} from 'spin.js';
+
 document.addEventListener('DOMContentLoaded', function() {
 
     // default load all recipes
