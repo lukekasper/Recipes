@@ -1135,8 +1135,7 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
         console.error('Error:', error);
         responseJSON.responseError = error;
         return responseJSON
-    } 
-    finally {
+    } finally {
         hideSpinner(spinner);
     }
 }
@@ -1144,6 +1143,8 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
 // PUT or POST requests
 async function postData(url, data, apiMethod) {
     let responseJSON = {responseData: '', responseError: ''};
+    showSpinner(spinner);
+    
     try {
 
         const response = await fetch(url, {
@@ -1173,6 +1174,8 @@ async function postData(url, data, apiMethod) {
         console.error('Error:', error);
         responseJSON.responseError = error;
         return responseJSON
+    } finally {
+        hideSpinner(spinner);
     }
 }
 
