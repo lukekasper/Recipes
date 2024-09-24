@@ -1102,6 +1102,12 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
         left: '50%', // Left position relative to parent
         position: 'absolute' // Element positioning
     };
+    
+    if (typeof Spinner !== 'undefined') {
+        console.log('Spin.js is loaded');
+    } else {
+        console.error('Spin.js is not loaded');
+    }
 
     // Create the spinner
     const spinner = new Spinner(opts);
