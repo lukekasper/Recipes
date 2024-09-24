@@ -1,4 +1,4 @@
-import {Spinner} from 'spin.js';
+const { Spinner } = require('spin.js');
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -1152,27 +1152,27 @@ async function postData(url, data, apiMethod) {
     let responseJSON = {responseData: '', responseError: ''};
     try {
 
-            const response = await fetch(url, {
-                method: apiMethod,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: data
-            });
+        const response = await fetch(url, {
+            method: apiMethod,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: data
+        });
 
-            // used to handle HTTP Error Responses
-            if (!response.ok) {
-                if (response.status === 401) {
-                    // Redirect to login page
-                    window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
-                }
-                 // If the response is not OK, handle the error
-                throw new Error('Error: ', response.statusText);
+        // used to handle HTTP Error Responses
+        if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login page
+                window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
             }
+                // If the response is not OK, handle the error
+            throw new Error('Error: ', response.statusText);
+        }
 
-            // if response is ok, return the data
-            responseJSON.responseData = await response.json();
-            return responseJSON
+        // if response is ok, return the data
+        responseJSON.responseData = await response.json();
+        return responseJSON
     }
     catch (error) {
         // Handle the error that occurred during the asynchronous operation
