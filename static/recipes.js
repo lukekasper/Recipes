@@ -1182,22 +1182,22 @@ async function postData(url, data, apiMethod) {
     }
 }
 
-function showSpinner(spinner) {
-    const target = document.getElementById('spinner');
-    const content = document.getElementById('all_recipes-view');
+// function showSpinner(spinner) {
+//     const target = document.getElementById('spinner');
+//     const content = document.getElementById('all_recipes-view');
 
-    target.style.display = 'block';
-    content.style.display = 'none';
+//     target.style.display = 'block';
+//     content.style.display = 'none';
 
-    spinner.spin(target);
-}
+//     spinner.spin(target);
+// }
 
-function hideSpinner(spinner) {
-    const target = document.getElementById('spinner');
-    const content = document.getElementById('all_recipes-view');
+// function hideSpinner(spinner) {
+//     const target = document.getElementById('spinner');
+//     const content = document.getElementById('all_recipes-view');
 
-    target.style.display = 'none';
-    content.style.display = 'block';
+//     target.style.display = 'none';
+//     content.style.display = 'block';
 
-    spinner.stop();
-}
+//     spinner.stop();
+// }
