@@ -1,5 +1,3 @@
-const { Spinner } = require('spin.js');
-
 document.addEventListener('DOMContentLoaded', function() {
 
     // default load all recipes
