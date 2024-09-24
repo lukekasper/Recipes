@@ -1,11 +1,25 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // default load all recipes
+    // Create Spinner object
+    var opts = {
+        lines: 12, // The number of lines to draw
+        length: 7, // The length of each line
+        width: 5, // The line thickness
+        radius: 10, // The radius of the inner circle
+        color: '#3498db', // CSS color or array of colors
+        speed: 1, // Rounds per second
+        trail: 60, // Afterglow percentage
+        className: 'spinner', // The CSS class to assign to the spinner
+        top: '50%', // Top position relative to parent
+        left: '50%', // Left position relative to parent
+        position: 'absolute' // Element positioning
+    };
+    const spinner = new Spinner(opts);
+
+    // Default load all recipes
     load_recipes(user='', cuisine='', meal='');
 
-    const spinner = new Spinner();
-
-    // run when username is clicked
+    // Run when username is clicked
     if (document.querySelector('#usrname')) {
         document.querySelector('#usrname').addEventListener('click', () => {
             const usrname = document.querySelector('#name').innerHTML;
@@ -14,27 +28,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // run when logo is clicked
+    // Run when logo is clicked
     document.querySelector('#logo').addEventListener('click', () => {
         load_recipes(user='', cuisine='', meal='');
     });
 
-    // run when cuisines is clicked
+    // Run when cuisines is clicked
     document.querySelector('#Cuisines-link').addEventListener('click', () => {
         generate_page('Cuisines', '/cuisines', '#cuisines');
     });
 
-    // run when meals is clicked
+    // Run when meals is clicked
     document.querySelector('#Meals-link').addEventListener('click', () => {
         generate_page('Meals', '/meals', '#meals');
     });
 
-    // run when favorites is clicked
+    // Run when favorites is clicked
     document.querySelector('#Favoirtes-link').addEventListener('click', () => {
         generate_page('My Favorites', '/favorites', '#favorites');
     });
 
-    // run when search icon is clicked or enter is pressed
+    // Run when search icon is clicked or enter is pressed
     document.querySelector('#search-button').addEventListener('click', search_recipes);
     document.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
@@ -1090,30 +1104,7 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
         urlWithParams = `${url}?${param1Name}=${encodeURIComponent(data1)}`;
     }
 
-    // Create spinner widget
-    var opts = {
-        lines: 12, // The number of lines to draw
-        length: 7, // The length of each line
-        width: 5, // The line thickness
-        radius: 10, // The radius of the inner circle
-        color: '#3498db', // CSS color or array of colors
-        speed: 1, // Rounds per second
-        trail: 60, // Afterglow percentage
-        className: 'spinner', // The CSS class to assign to the spinner
-        top: '50%', // Top position relative to parent
-        left: '50%', // Left position relative to parent
-        position: 'absolute' // Element positioning
-    };
-    
-    // if (typeof Spinner !== 'undefined') {
-    //     console.log('Spin.js is loaded');
-    // } else {
-    //     console.error('Spin.js is not loaded');
-    // }
-
-    // // Create the spinner
-    // const spinner = new Spinner(opts);
-    // showSpinner(spinner);
+    showSpinner(spinner);
 
     try {
         const response = await fetch(urlWithParams, {
@@ -1143,9 +1134,9 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
         responseJSON.responseError = error;
         return responseJSON
     } 
-    // finally {
-    //     hideSpinner(spinner);
-    // }
+    finally {
+        hideSpinner(spinner);
+    }
 }
 
 // PUT or POST requests
@@ -1183,22 +1174,22 @@ async function postData(url, data, apiMethod) {
     }
 }
 
-// function showSpinner(spinner) {
-//     const target = document.getElementById('spinner');
-//     const content = document.getElementById('all_recipes-view');
+function showSpinner(spinner) {
+    const target = document.getElementById('spinner');
+    const content = document.getElementById('all_recipes-view');
 
-//     target.style.display = 'block';
-//     content.style.display = 'none';
+    target.style.display = 'block';
+    content.style.display = 'none';
 
-//     spinner.spin(target);
-// }
+    spinner.spin(target);
+}
 
-// function hideSpinner(spinner) {
-//     const target = document.getElementById('spinner');
-//     const content = document.getElementById('all_recipes-view');
+function hideSpinner(spinner) {
+    const target = document.getElementById('spinner');
+    const content = document.getElementById('all_recipes-view');
 
-//     target.style.display = 'none';
-//     content.style.display = 'block';
+    target.style.display = 'none';
+    content.style.display = 'block';
 
-//     spinner.stop();
-// }
+    spinner.stop();
+}
