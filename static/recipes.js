@@ -490,6 +490,7 @@ async function load_recipe(title) {
     document.querySelector('#recipe-view').style.display = 'block';
     document.querySelector('#matched_recipes-view').style.display = 'none';
     document.querySelector('#cuisines-view').style.display = 'none';
+    document.querySelector('#meals-view').style.display = 'none';
     document.querySelector('#favorites-view').style.display = 'none';
 
     // Send API request to get recipe info
@@ -1027,6 +1028,7 @@ async function search_recipes() {
         document.querySelector('#recipe-view').style.display = 'none';
         document.querySelector('#matched_recipes-view').style.display = 'block';
         document.querySelector('#cuisines-view').style.display = 'none';
+        document.querySelector('#meals-view').style.display = 'none';
         document.querySelector('#favorites-view').style.display = 'none';
 
         document.querySelector("#ul1").innerHTML = '';
@@ -1086,6 +1088,25 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
         urlWithParams = `${url}?${param1Name}=${encodeURIComponent(data1)}`;
     }
 
+    // Create spinner widget
+    var opts = {
+        lines: 12, // The number of lines to draw
+        length: 7, // The length of each line
+        width: 5, // The line thickness
+        radius: 10, // The radius of the inner circle
+        color: '#3498db', // CSS color or array of colors
+        speed: 1, // Rounds per second
+        trail: 60, // Afterglow percentage
+        className: 'spinner', // The CSS class to assign to the spinner
+        top: '50%', // Top position relative to parent
+        left: '50%', // Left position relative to parent
+        position: 'absolute' // Element positioning
+    };
+
+    // Create the spinner
+    const spinner = new Spinner(opts);
+    showSpinner(spinner);
+
     try {
         const response = await fetch(urlWithParams, {
             method: apiMethod,
@@ -1113,6 +1134,8 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
         console.error('Error:', error);
         responseJSON.responseError = error;
         return responseJSON
+    } finally {
+        hideSpinner(spinner);
     }
 }
 
@@ -1149,4 +1172,24 @@ async function postData(url, data, apiMethod) {
         responseJSON.responseError = error;
         return responseJSON
     }
+}
+
+function showSpinner(spinner) {
+    const target = document.getElementById('spinner');
+    const content = document.getElementById('all_recipes-view');
+
+    target.style.display = 'block';
+    content.style.display = 'none';
+
+    spinner.spin(target);
+}
+
+function hideSpinner(spinner) {
+    const target = document.getElementById('spinner');
+    const content = document.getElementById('all_recipes-view');
+
+    target.style.display = 'none';
+    content.style.display = 'block';
+
+    spinner.stop();
 }

@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block body %}
+    <div id="spinner" style="display: none;"></div>
     <div id="all_recipes-view">
         <h3 id="recipes-title"></h3>
         <img src="https://static.thenounproject.com/png/568541-200.png" class="help-icon" id="search-help">
@@ -40,5 +41,6 @@
 {% endblock %}
 
 {% block script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/4.0.0/spin.min.js"></script>
     <script src="{% static 'recipes.js' %}"></script>
 {% endblock %}
