@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // default load all recipes
     load_recipes(user='', cuisine='', meal='');
 
+    const spinner = new Spinner(opts);
+
     // run when username is clicked
     if (document.querySelector('#usrname')) {
         document.querySelector('#usrname').addEventListener('click', () => {
@@ -1103,15 +1105,15 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
         position: 'absolute' // Element positioning
     };
     
-    if (typeof Spinner !== 'undefined') {
-        console.log('Spin.js is loaded');
-    } else {
-        console.error('Spin.js is not loaded');
-    }
+    // if (typeof Spinner !== 'undefined') {
+    //     console.log('Spin.js is loaded');
+    // } else {
+    //     console.error('Spin.js is not loaded');
+    // }
 
-    // Create the spinner
-    const spinner = new Spinner(opts);
-    showSpinner(spinner);
+    // // Create the spinner
+    // const spinner = new Spinner(opts);
+    // showSpinner(spinner);
 
     try {
         const response = await fetch(urlWithParams, {
