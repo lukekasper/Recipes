@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // default load all recipes
     load_recipes(user='', cuisine='', meal='');
 
-    const spinner = new Spinner(opts);
+    const spinner = new Spinner();
 
     // run when username is clicked
     if (document.querySelector('#usrname')) {
