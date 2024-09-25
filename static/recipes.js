@@ -1108,12 +1108,14 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
     }
 
     showSpinner(spinner);
+    const csrftoken = getCookie('csrftoken');
 
     try {
         const response = await fetch(urlWithParams, {
             method: apiMethod,
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
             },
         });
 
@@ -1145,12 +1147,14 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
 async function postData(url, data, apiMethod) {
     let responseJSON = {responseData: '', responseError: ''};
     showSpinner(spinner);
+    const csrftoken = getCookie('csrftoken');
     
     try {
         const response = await fetch(url, {
             method: apiMethod,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
             },
             body: data
         });
@@ -1177,6 +1181,22 @@ async function postData(url, data, apiMethod) {
     } finally {
         hideSpinner(spinner);
     }
+}
+
+// Get csrf token from cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
 
 function showSpinner(spinner) {
