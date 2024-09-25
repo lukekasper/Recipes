@@ -118,7 +118,7 @@ def add_recipe(request):
 
         # get recipe info from fetch
         try:
-            title = request.POST["title"]
+            title = request.POST.get("title")
             title_lst = title.split(" ")
             new_lst = []
             for word in title_lst:
