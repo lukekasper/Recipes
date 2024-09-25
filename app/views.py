@@ -105,6 +105,7 @@ def new_recipe(request):
 
 
 @login_required
+@csrf_exempt
 def add_recipe(request):
     """
     Allows authenticated users to add a new recipe to the app by
@@ -240,6 +241,7 @@ def get_recipe(request, title):
 
 
 @login_required
+@csrf_exempt
 def delete_recipe(request, title):
     """
     Deletes recipe from database based on its title.
@@ -260,6 +262,7 @@ def delete_recipe(request, title):
     return HttpResponseNotAllowed(permitted_methods=["DELETE"], content=error_message)
 
 @login_required
+@csrf_exempt
 def update_recipe(request, title):
     """
     Updates recipe with new content.
@@ -316,6 +319,7 @@ def update_recipe(request, title):
 
 
 @login_required
+@csrf_exempt
 def update_rating(request, name):
     """
     Allows authenticated users to update the rating of a specific recipe
@@ -359,6 +363,7 @@ def update_rating(request, name):
 
 
 @login_required
+@csrf_exempt
 def search_recipes(_, title):
     """
     Allows authenticated users to search for recipes that contain specific
@@ -544,6 +549,7 @@ def favorites(request):
 
 
 @login_required
+@csrf_exempt
 def update_favorites(request, title):
     """
     Allows authenticated users to update the favorite status of a recipe.
