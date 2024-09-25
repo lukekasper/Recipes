@@ -321,6 +321,7 @@ def update_rating(request, name):
     "rating" attribute, which represents the new rating value (an integer between 1 and 5).
     """
     # ensure request was a PUT
+
     if request.method == "PUT":
 
         # get recipe info and convert user ratings into a dictionary
@@ -329,8 +330,7 @@ def update_rating(request, name):
         try:
             rating_dict = recipe.user_rating_dict()
             signed_user = request.user.username
-            data = json.loads(request.body)
-            rating = data.get("body")
+            rating = json.loads(request.body)
             rating = int(rating)
 
             # check if rating is an int from 1-5

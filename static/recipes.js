@@ -454,7 +454,8 @@ function make_image_html(image_src, id) {
 //update rating in django model and style css accordingly
 async function update_rating(title, i) {
 
-    const responseJSON = await postData('/update_rating/'+title, JSON.stringify(i+1), 'PUT')
+    const rating = i + 1;
+    const responseJSON = await postData('/update_rating/'+title, JSON.stringify(rating), 'PUT')
 
     if (!responseJSON.responseError) {
         const data = responseJSON.responseData;
@@ -1146,7 +1147,6 @@ async function postData(url, data, apiMethod) {
     showSpinner(spinner);
     
     try {
-
         const response = await fetch(url, {
             method: apiMethod,
             headers: {
