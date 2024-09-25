@@ -29,6 +29,8 @@ async function new_recipe(event) {
 
     const csrftoken = getCookie('csrftoken');
 
+    console.log(csrftoken);
+
     const options = {
         method: 'POST',
         headers: {
