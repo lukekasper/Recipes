@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 
 
 from .models import User, Recipe, Comment
@@ -379,30 +380,18 @@ def search_recipes(_, title):
 
         search_list = title.split(", ")
 
+        final_results = []
+
         # loop over all recipes
-        for recipe in recipes:
+        for search in search_list:
 
-            # clean the ingredients data
-            recipe_ingredients_list = recipe.ingredients
-            recipe_ingredients_list = recipe_ingredients_list[1:-1]
-            recipe_ingredients_list = recipe_ingredients_list.replace('"', '')
-            recipe_ingredients_list = recipe_ingredients_list.split(",")
+            results = Recipe.objects.filter(
+                Q(title__icontains=search) | Q(ingredients__icontains=search)
+            ).values_list('title', flat=True).distinct()
 
-            # if the recipe has the ingredients being searched, add it to the list of recipes to return
-            if len(search_list) == 1:
-                for ingredient in recipe_ingredients_list:
-                    if search_list[0].lower() in ingredient.lower():
-                        matched_recipes.add(recipe.title)
+            final_results = list(set(final_results) | set(results))
 
-            if set(search_list).issubset(set(recipe_ingredients_list)):
-                matched_recipes.add(recipe.title)
-
-            # check if search matches a recipe title, if so add it to the matched recipes list
-            if len(search_list) == 1:
-                if search_list[0].lower() in recipe.title.lower():
-                    matched_recipes.add(recipe.title)
-
-        return JsonResponse({"matched_recipes": list(matched_recipes)})
+        return JsonResponse({"matched_recipes": final_results})
 
     # return error code if invalid JSON data
     except json.JSONDecodeError:
