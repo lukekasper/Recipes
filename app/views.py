@@ -375,9 +375,6 @@ def search_recipes(_, title):
     # get ingredients list and split into individual ingredients
     # try reading the json data
     try:
-        recipes = Recipe.objects.all()
-        matched_recipes = set()
-
         search_list = title.split(", ")
 
         final_results = []
@@ -643,3 +640,19 @@ def paginate_recipes(request, recipes):
     # return appropriate recipes
     recipes = recipes[start:end]
     return recipes
+
+
+def autocomplete(request):
+    """
+    Returns a list of matched responses basesd on the query and field.
+    """
+    query = request.GET.get('query', '')
+    field = request.GET.get('field', '')
+
+    fields = Recipe.objects.values_list(field, flat=True).distinct()
+
+    filter_kwargs = {f"{field}__icontains": query}
+
+    matched_fields = fields.filter(**filter_kwargs).distinct()
+
+    return JsonResponse({"matched_fields": list(matched_fields)})

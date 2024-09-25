@@ -1,6 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // run when form is submitted
+    // Autocomplete feature
+    const category = document.querySelector('#id_category');
+    category.addEventListener('input', function() {
+
+        if (category.value.length >= 2) {
+            fetch_autocomplete(category.value, 'category');
+        }
+    })
+
+    // Run when form is submitted
     document.querySelector('#new_recipe-form').addEventListener('submit', (event) => new_recipe(event));
     document.querySelector('#search_bar').style.backgroundColor = "transparent";
     document.querySelector('#search_box').placeholder = "Search disabled on this page.";
@@ -108,6 +117,28 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+
+async function fetch_autocomplete(query, field)
+{
+    try {
+        const response = await fetch(`/autocomplete/?query=${query}&field=${field}`);
+
+        if (!response.ok) {
+            // If the response is not OK, handle the error
+            throw new Error('Error: ', response.statusText);
+        }
+
+        const responseData = await response.json();
+        console.log(responseData);
+    }
+    catch (error) {
+        // Handle the error that occurred during the asynchronous operation
+        console.error('Error:', error);
+        responseJSON.responseError = error;
+        return responseJSON
+    }
 }
 
 // // Function to check if all required fields are filled
