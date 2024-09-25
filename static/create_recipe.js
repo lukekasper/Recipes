@@ -136,8 +136,6 @@ async function fetch_autocomplete(query, field)
     catch (error) {
         // Handle the error that occurred during the asynchronous operation
         console.error('Error:', error);
-        responseJSON.responseError = error;
-        return responseJSON
     }
 }
 
