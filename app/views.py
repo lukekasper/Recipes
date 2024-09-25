@@ -117,7 +117,8 @@ def add_recipe(request):
     if request.method == "POST":
 
         # get recipe info from fetch
-        title = request.POST.get("title")
+        data = json.loads(request.body)
+        title = data.get("title")
         title_lst = title.split(" ")
         new_lst = []
         for word in title_lst:
