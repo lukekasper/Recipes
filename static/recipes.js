@@ -1108,14 +1108,12 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
     }
 
     showSpinner(spinner);
-    const csrftoken = getCookie('csrftoken');
 
     try {
         const response = await fetch(urlWithParams, {
             method: apiMethod,
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
             },
         });
 
@@ -1147,14 +1145,12 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
 async function postData(url, data, apiMethod) {
     let responseJSON = {responseData: '', responseError: ''};
     showSpinner(spinner);
-    const csrftoken = getCookie('csrftoken');
     
     try {
         const response = await fetch(url, {
             method: apiMethod,
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
             },
             body: data
         });
