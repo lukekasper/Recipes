@@ -34,10 +34,9 @@ async function new_recipe(event) {
     const options = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken
         },
-        body: JSON.stringify(formData)
+        body: formData
     };
 
     // Send POST request to back end
