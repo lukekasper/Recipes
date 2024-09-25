@@ -117,57 +117,62 @@ def add_recipe(request):
     if request.method == "POST":
 
         # get recipe info from fetch
-        data = json.loads(request.body)
-        title = data.get("title")
-        title_lst = title.split(" ")
-        new_lst = []
-        for word in title_lst:
-            word = word[0].upper() + word[1:].lower()
-            new_lst.append(word)
-        title = " ".join(new_lst)
-
-        if Recipe.objects.filter(title=title).exists():
-            error_message = "Recipe with this name already exists!  Please choose a new name."
-            return JsonResponse({"error": error_message}, status=400)
-
-        user = request.user
-        category = request.POST.get("category")
-        category = category[0].upper() + category[1:].lower()
-
-        meal = request.POST.get("meal")
-        meal = meal[0].upper() + meal[1:].lower()
-
-        cooktime = request.POST.get("cooktime")
-
-        # get image if one was uploaded, otherwise use stock image
-        if request.FILES.get("image", False):
-            image = request.FILES["image"]
-        else:
-            image = "images/no_image.jpeg"
-
-        # add ingredients and directions
-        ingredients = list(request.POST.get("ingredients").split(","))
-        ingredients_str = ''
-        for ingredient in ingredients:
-            ingredients_str += ingredient + ","
-        ingredients_str = ingredients_str[:-1]
-        directions = request.POST.get("instructions")
-
-        # create recipe
-        recipe = Recipe(user=user, title=title, ingredients=ingredients_str, instructions=directions, category=category,
-                        meal=meal, image=image, cooktime=cooktime)
-
-        # add notes to recipe model if notes were uploaded, otherwise leave blank
-        if request.POST.get("notes", False):
-            notes = request.POST.get("notes")
-        else:
-            notes = ''
-        recipe.note = notes
-
-        # try to create recipie
         try:
+            data = json.loads(request.body)
+            title = data.get("title")
+            title_lst = title.split(" ")
+            new_lst = []
+            for word in title_lst:
+                word = word[0].upper() + word[1:].lower()
+                new_lst.append(word)
+            title = " ".join(new_lst)
+
+            if Recipe.objects.filter(title=title).exists():
+                error_message = "Recipe with this name already exists!  Please choose a new name."
+                return JsonResponse({"error": error_message}, status=400)
+
+            user = request.user
+            category = request.POST.get("category")
+            category = category[0].upper() + category[1:].lower()
+
+            meal = request.POST.get("meal")
+            meal = meal[0].upper() + meal[1:].lower()
+
+            cooktime = request.POST.get("cooktime")
+
+            # get image if one was uploaded, otherwise use stock image
+            if request.FILES.get("image", False):
+                image = request.FILES["image"]
+            else:
+                image = "images/no_image.jpeg"
+
+            # add ingredients and directions
+            ingredients = list(request.POST.get("ingredients").split(","))
+            ingredients_str = ''
+            for ingredient in ingredients:
+                ingredients_str += ingredient + ","
+            ingredients_str = ingredients_str[:-1]
+            directions = request.POST.get("instructions")
+
+            # create recipe
+            recipe = Recipe(user=user, title=title, ingredients=ingredients_str, instructions=directions, category=category,
+                            meal=meal, image=image, cooktime=cooktime)
+
+            # add notes to recipe model if notes were uploaded, otherwise leave blank
+            if request.POST.get("notes", False):
+                notes = request.POST.get("notes")
+            else:
+                notes = ''
+            recipe.note = notes
+
+            # try to create recipie
+
             recipe.save()
             return JsonResponse({"message": "Recipe added."}, status=200)
+
+        except json.JSONDecodeError:
+            error_message = "Invalid JSON data."
+            return JsonResponse({"error": error_message}, status=400)
 
         # catch issues with incomplete model fields
         except IntegrityError:
