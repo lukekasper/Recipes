@@ -240,6 +240,7 @@ def get_recipe(request, title):
 
 
 @login_required
+@csrf_exempt
 def delete_recipe(request, title):
     """
     Deletes recipe from database based on its title.
