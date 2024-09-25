@@ -33,9 +33,9 @@ async function new_recipe(event) {
 
     const options = {
         method: 'POST',
-        headers: {
-            'X-CSRFToken': csrftoken
-        },
+        // headers: {
+        //     'X-CSRFToken': csrftoken
+        // },
         body: formData
     };
 
