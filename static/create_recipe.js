@@ -27,8 +27,14 @@ async function new_recipe(event) {
     formData.append('instructions', JSON.stringify(directions_list));
     formData.append('notes', JSON.stringify(notes_list));
 
+    const csrftoken = getCookie('csrftoken');
+
     const options = {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        },
         body: formData
     };
 
@@ -87,6 +93,22 @@ function process_list(id) {
         }
     })
     return list;
+}
+
+// Get csrf token from cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
 
 // // Function to check if all required fields are filled

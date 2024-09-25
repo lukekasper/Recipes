@@ -105,7 +105,6 @@ def new_recipe(request):
 
 
 @login_required
-@csrf_exempt
 def add_recipe(request):
     """
     Allows authenticated users to add a new recipe to the app by
