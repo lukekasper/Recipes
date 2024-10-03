@@ -539,6 +539,7 @@ async function load_recipe(title) {
     document.querySelector('#cuisines-view').style.display = 'none';
     document.querySelector('#meals-view').style.display = 'none';
     document.querySelector('#favorites-view').style.display = 'none';
+    document.querySelector("#page-banner").style.display = 'none';
 
     // Send API request to get recipe info
     const recipe_title = title.replaceAll("_"," ");
@@ -1028,7 +1029,7 @@ async function return_recipes() {
 async function update_favorites(title) {
 
     // send API request to update user's favorite recipes list
-    const responseJSON = await postData('/update_recipe/'+title, '', 'PUT')
+    const responseJSON = await postData('/update_favorites/'+title, '', 'PUT')
 
     if (!responseJSON.responseError) {
         const data = responseJSON.responseData;
