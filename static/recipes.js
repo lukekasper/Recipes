@@ -410,7 +410,15 @@ function make_comment_html(comment, title) {
     comment_p.append(comment_txt);
 
     // add an option to delete comment if it the signed in user posted it
-    const usrname = document.querySelector('#name').innerHTML;
+    const usr_el = document.querySelector('#name');
+    if (usr_el) {
+        const usrname = nameElement.innerHTML;
+    }
+    else {
+        const usrname = undefined;
+    }
+
+
     const x = make_image_html("https://icons.veryicon.com/png/o/miscellaneous/kqt/close-116.png", 'x'+comment.id);
     x.setAttribute('class','x');
     comment_p.append(x);

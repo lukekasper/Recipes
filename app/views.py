@@ -570,7 +570,7 @@ def update_favorites(request, title):
     return HttpResponseNotAllowed(permitted_methods=["PUT"], content=error_message)
 
 
-@login_required
+@csrf_exempt
 def add_comment(request, title):
     """
     Allows authenticated users to add a new comment to a specific recipe.
@@ -579,23 +579,32 @@ def add_comment(request, title):
     JSON data, and a new `Comment` object is created and saved to the database. The JSON
     response contains the serialized representation of the newly created comment.
     """
-    if request.method == "POST":
-        # get recipe, user, and comment info
-        user = request.user
-        recipe = Recipe.objects.get(title=title)
-        data = json.loads(request.body)
-        text = data.get("body")
+    try:
+        if request.method == "POST":
+            if not request.user.is_authenticated:
+                return JsonResponse({'error': 'User not authenticated'}, status=401)
 
-        # create new comment object
-        comment = Comment(text=text, user=user, recipe=recipe)
-        comment.save()
+            # get recipe, user, and comment info
+            user = request.user
+            title = title.replace("_", " ")
+            recipe = Recipe.objects.get(title=title)
+            text = json.loads(request.body)
 
-        return JsonResponse({"comment": comment.serialize()})
+            # create new comment object
+            comment = Comment(text=text, user=user, recipe=recipe)
+            comment.save()
 
-    return JsonResponse({"message": "Post Error."}, status=404)
+            return JsonResponse({"comment": comment.serialize()})
+
+        return JsonResponse({"message": "Post Error."}, status=404)
+
+    # return error code if any other exception occurs
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 @login_required
+@csrf_exempt
 def remove_comment(request, id):
     """
     Allows authenticated users to remove their own comments from a specific
@@ -609,10 +618,14 @@ def remove_comment(request, id):
         try:
             if Comment.objects.get(id=id):
                 comment = Comment.objects.get(id=id)
+                print('working')
                 if comment.user != request.user:
+                    print('working2')
                     return JsonResponse({"message": "You are not authorized to delete this comment."}, status=403)
+                print('working2')
                 comment.delete()
-            return JsonResponse({"message": "Comment Removed."}, status=204)
+                print('working3')
+            return JsonResponse({"message": "Comment Removed."}, status=200)
 
         # return error if comment does not exist
         except ObjectDoesNotExist:
