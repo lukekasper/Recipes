@@ -20,42 +20,59 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Default load all recipes
     load_recipes(user='', cuisine='', meal='');
+    history.pushState({}, '', "/");
+
+    // Event listener for popstate
+    window.addEventListener('popstate', function(event) {
+        loadContent(location.pathname);
+    });
 
     // Run when username is clicked
     if (document.querySelector('#usrname')) {
         document.querySelector('#usrname').addEventListener('click', () => {
             const usrname = document.querySelector('#name').innerHTML;
             load_recipes(user=usrname, cuisine='', meal='');
-            //history.pushState({}, '', "/" + usrname);
+            history.pushState({}, '', "/" + usrname);
         });
     }
 
     // Run when logo is clicked
     document.querySelector('#logo').addEventListener('click', () => {
         load_recipes(user='', cuisine='', meal='');
+        history.pushState({}, '', "/");
     });
 
     // Run when cuisines is clicked
     document.querySelector('#Cuisines-link').addEventListener('click', () => {
         generate_page('Cuisines', '/cuisines', '#cuisines');
+        history.pushState({}, '', "/cuisines");
     });
 
     // Run when meals is clicked
     document.querySelector('#Meals-link').addEventListener('click', () => {
         generate_page('Meals', '/meals', '#meals');
+        history.pushState({}, '', "/meals");
     });
 
     // Run when favorites is clicked
     document.querySelector('#Favoirtes-link').addEventListener('click', () => {
         generate_page('My Favorites', '/favorites', '#favorites');
+        history.pushState({}, '', "/favorites");
     });
 
     // Run when search icon is clicked or enter is pressed
-    document.querySelector('#search-button').addEventListener('click', search_recipes);
+    document.querySelector('#search-button').addEventListener('click', () => {
+        if (document.querySelector('#search_box').value.length != 0) {
+            search_recipes();
+            history.pushState({}, '', "/search");
+        }
+    });
+
     document.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             if (document.querySelector('#search_box').value.length != 0) {
                 search_recipes();
+                history.pushState({}, '', "/search");
             }
         }
     });
@@ -67,17 +84,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function generate_page(title, api_path, id) {
 
-    // update page title
+    // Show banner
+    document.querySelector("#page-banner").style.display = 'block';
+
+    // Update page title
     document.querySelector("#recipes-title").innerHTML = title;
 
-    // send API request to get cuisine info
+    // Send API request to get cuisine info
     const responseJSON = await getData(api_path, 'GET');
 
     if (!responseJSON.responseError) {
 
         const data = responseJSON.responseData;
 
-        // show cuisines view and hide all others
+        // Show cuisines view and hide all others
         document.querySelector('#all_recipes').style.display = 'none';
         document.querySelector('#recipe-view').style.display = 'none';
         document.querySelector('#matched_recipes-view').style.display = 'none';
@@ -98,35 +118,35 @@ async function generate_page(title, api_path, id) {
             document.querySelector('#meals-view').style.display = 'none';
         }
 
-        // clean div
+        // Clean div
         document.querySelector(id).innerHTML = '';
 
         data.list.forEach(object => {
 
-            // set the content depending upon search
+            // Set the content depending upon search
             let content = object.title;
             if (title == "Cuisines" || title == "Meals") {
                 content = object;
             }
 
-            // make list html and append to ul
+            // Make list html and append to ul
             const element = make_html_element(content, content+'_li', 'li_item', 'li');
             document.querySelector(id).append(element);
 
-            // add event listener to link to clicked recipes page and change color when mouseover
+            // Add event listener to link to clicked recipes page and change color when mouseover
             element.addEventListener('mouseover', () => {element.style.color = "Blue";});
             element.addEventListener('mouseout', () => {element.style.color = "Black";});
 
             if (title == "Cuisines") {
-                // load all recipes with that category
+                // Load all recipes with that category
                 element.addEventListener('click', () => load_recipes(user='', cuisine=content, meal=''));
             }
             else if (title == "Meals") {
-                // load all recipes with that category
+                // Load all recipes with that category
                 element.addEventListener('click', () => load_recipes(user='', cuisine='', meal=content));
             }
             else {
-                // load that recipes page when name is clicked
+                // Load that recipes page when name is clicked
                 element.addEventListener('click', () => load_recipe(content));
             }
         });
@@ -1032,6 +1052,9 @@ function trim_chars(text) {
 // send API request to search for recipes with listed ingredients
 async function search_recipes() {
 
+    // Hide banner
+    document.querySelector("#page-banner").style.display = 'none';
+
     // get list of ingredients from search input box
     const search = document.querySelector("#search_box").value;
 
@@ -1213,4 +1236,22 @@ function hideSpinner(spinner) {
     content.style.display = 'block';
 
     spinner.stop();
+}
+
+// Function to load content based on the current path
+function loadContent(path) {
+    if (path === '/') {
+        load_recipes(user='', cuisine='', meal='');
+    } else if (path.startsWith('/cuisines')) {
+        generate_page('Cuisines', '/cuisines', '#cuisines');
+    } else if (path.startsWith('/meals')) {
+        generate_page('Meals', '/meals', '#meals');
+    } else if (path.startsWith('/favorites')) {
+        generate_page('My Favorites', '/favorites', '#favorites');
+    } else if (path.startsWith('/search')) {
+        search_recipes();
+    } else {
+        const usrname = path.substring(1);
+        load_recipes(user=usrname, cuisine='', meal='');
+    }
 }

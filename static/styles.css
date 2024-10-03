@@ -529,3 +529,7 @@ h4 {
 #logo:hover {
     cursor: pointer;
 }
+
+#matched_recipes-view {
+    margin-top: 30px;
+}

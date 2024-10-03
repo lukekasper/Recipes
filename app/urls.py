@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,7 +28,7 @@ urlpatterns = [
     path("remove_comment/<int:id>", views.remove_comment, name="remove_comment"),
     path("delete_recipe/<str:title>", views.delete_recipe, name="delete_recipe"),
     path("update_recipe/<str:title>", views.update_recipe, name="update_recipe"),
-    path("autocomplete/", views.autocomplete, name="autocomplete")
+    path("autocomplete/", views.autocomplete, name="autocomplete"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
