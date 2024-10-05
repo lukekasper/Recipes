@@ -85,7 +85,7 @@ class Recipe(models.Model):
         Get all the comments for a specified recipe.
         """
         if self.recipe_comments.all():
-            return [comment.serialize() for comment in self.recipe_comments.order_by("timestamp").all()]
+            return [comment.serialize() for comment in self.recipe_comments.order_by("-timestamp").all()]
         else:
             return None
 

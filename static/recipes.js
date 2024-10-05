@@ -266,7 +266,6 @@ function make_recipe_html(recipe) {
 
     // make comments div
     const commentsDiv = make_html_element('', 'comments-div_'+recipe_title, 'comments-div', 'div');
-    commentsDiv.append(make_html_element('Comments:', '', 'comments-header', 'h6'));
     commentsDiv.append(make_html_element('', 'comments-container_'+recipe_title, 'comments-container', 'div'));
     commentsDiv.append(make_html_element('', 'comments-inner_'+recipe_title, 'comments-inner', 'div'));
 
