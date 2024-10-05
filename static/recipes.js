@@ -429,7 +429,7 @@ function make_comment_html(comment, title) {
     // add an option to delete comment if it the signed in user posted it
     const usr_el = document.querySelector('#name');
     if (usr_el) {
-        const usrname = nameElement.innerHTML;
+        const usrname = usr_el.innerHTML;
     }
     else {
         const usrname = undefined;
