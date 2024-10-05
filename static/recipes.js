@@ -63,16 +63,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Run when search icon is clicked or enter is pressed
     document.querySelector('#search-button').addEventListener('click', () => {
         if (document.querySelector('#search_box').value.length != 0) {
-            search_recipes();
-            history.pushState({}, '', "/search");
+            const search = document.querySelector("#search_box").value;
+            search_recipes(search);
+
+            // Get the current URL
+            var currentURL = window.location.href + "search";
+            var url = new URL(currentURL);
+            url.searchParams.set('val', search);
+
+            // Use pushState to update the URL
+            history.pushState({ path: url.href }, '', url.href);
         }
     });
 
     document.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             if (document.querySelector('#search_box').value.length != 0) {
-                search_recipes();
-                history.pushState({}, '', "/search");
+                // get list of ingredients from search input box
+                const search = document.querySelector("#search_box").value;
+                search_recipes(search);
+
+                var currentURL = window.location.href + "search";
+                var url = new URL(currentURL);
+                url.searchParams.set('val', search);
+
+                // Use pushState to update the URL
+                history.pushState({ path: url.href }, '', url.href);
             }
         }
     });
@@ -164,6 +180,7 @@ function load_recipes(user, cuisine, meal) {
 
     // hide recipe view and show all recipes
     document.querySelector('#all_recipes').style.display = 'block';
+    document.querySelector('#page-banner').style.display = 'block';
     document.querySelector('#recipe-view').style.display = 'none';
     document.querySelector('#matched_recipes-view').style.display = 'none';
     document.querySelector('#cuisines-view').style.display = 'none';
@@ -540,6 +557,7 @@ async function load_recipe(title) {
     document.querySelector('#meals-view').style.display = 'none';
     document.querySelector('#favorites-view').style.display = 'none';
     document.querySelector("#page-banner").style.display = 'none';
+    history.pushState({}, '', "/"+title);
 
     // Send API request to get recipe info
     const recipe_title = title.replaceAll("_"," ");
@@ -1059,13 +1077,10 @@ function trim_chars(text) {
 }
 
 // send API request to search for recipes with listed ingredients
-async function search_recipes() {
+async function search_recipes(search) {
 
     // Hide banner
     document.querySelector("#page-banner").style.display = 'none';
-
-    // get list of ingredients from search input box
-    const search = document.querySelector("#search_box").value;
 
     // send API request to get recipes with listed ingredients
     const responseJSON = await getData('/search_recipes/'+search, 'GET');
@@ -1258,7 +1273,9 @@ function loadContent(path) {
     } else if (path.startsWith('/favorites')) {
         generate_page('My Favorites', '/favorites', '#favorites');
     } else if (path.startsWith('/search')) {
-        search_recipes();
+        var url = new URL(window.location.href);
+        var value = url.searchParams.get('val');
+        search_recipes(value);
     } else {
         const usrname = path.substring(1);
         load_recipes(user=usrname, cuisine='', meal='');

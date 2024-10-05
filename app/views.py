@@ -362,9 +362,8 @@ def update_rating(request, name):
     return HttpResponseNotAllowed(permitted_methods=["PUT"], content=error_message)
 
 
-@login_required
 @csrf_exempt
-def search_recipes(_, title):
+def search_recipes(request, title):
     """
     Allows authenticated users to search for recipes that contain specific
     ingredients or have titles that match the search query. The search query is provided in
@@ -618,13 +617,9 @@ def remove_comment(request, id):
         try:
             if Comment.objects.get(id=id):
                 comment = Comment.objects.get(id=id)
-                print('working')
                 if comment.user != request.user:
-                    print('working2')
                     return JsonResponse({"message": "You are not authorized to delete this comment."}, status=403)
-                print('working2')
                 comment.delete()
-                print('working3')
             return JsonResponse({"message": "Comment Removed."}, status=200)
 
         # return error if comment does not exist
