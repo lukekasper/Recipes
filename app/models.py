@@ -38,7 +38,13 @@ class Recipe(models.Model):
         super().save(*args, **kwargs)  # Call the "real" save() method to save the image field
         if self.image:
             img = Image.open(self.image.path)
-            img = img.crop((0, 0, min(img.size), min(img.size)))
+            width, height = img.size
+            min_side = min(width, height)
+            left = (width - min_side) / 2
+            top = (height - min_side) / 2
+            right = (width + min_side) / 2
+            bottom = (height + min_side) / 2
+            img = img.crop((left, top, right, bottom))
             img.save(self.image.path)
 
     def user_rating_dict(self):
