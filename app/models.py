@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.forms import ModelForm
-from django.core.validators import MaxValueValidator, MinValueValidator
+from PIL import Image
 
 import re
 
@@ -34,6 +33,13 @@ class Recipe(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     note = models.CharField(max_length=500, blank=True)
     user_rating = models.CharField(max_length=50000, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # Call the "real" save() method to save the image field
+        if self.image:
+            img = Image.open(self.image.path)
+            img = img.crop((0, 0, min(img.size), min(img.size)))
+            img.save(self.image.path)
 
     def user_rating_dict(self):
         """
