@@ -561,7 +561,6 @@ async function load_recipe(title) {
     if (base_url.slice(-1) == "/") {
         base_url = base_url.slice(0, -1);
     }
-    console.log(base_url);
     window.history.pushState({}, '', base_url + "/" +title);
 
     // Send API request to get recipe info
@@ -1286,7 +1285,6 @@ function loadContent(path) {
         let usrname = '';
         let url_path = path.substring(1);
 
-        console.log(url_path);
         if (document.querySelector('#usrname')) {
             usrname = document.querySelector('#usrname').innerHTML;
         }
