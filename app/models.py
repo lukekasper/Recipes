@@ -35,6 +35,9 @@ class Recipe(models.Model):
     user_rating = models.CharField(max_length=50000, null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        """
+        Override image save method to crop photo to square for display.
+        """
         super().save(*args, **kwargs)  # Call the "real" save() method to save the image field
         if self.image:
             img = Image.open(self.image.path)

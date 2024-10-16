@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Default load all recipes
     load_recipes(user='', cuisine='', meal='');
-    history.pushState({}, '', "/");
+    window.history.pushState({}, '', window.location.origin + "/");
 
     // Event listener for popstate
     window.addEventListener('popstate', function(event) {
@@ -32,32 +32,32 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('#usrname').addEventListener('click', () => {
             const usrname = document.querySelector('#name').innerHTML;
             load_recipes(user=usrname, cuisine='', meal='');
-            history.pushState({}, '', "/" + usrname);
+            window.history.pushState({}, '', window.location.origin + "/" + usrname);
         });
     }
 
     // Run when logo is clicked
     document.querySelector('#logo').addEventListener('click', () => {
         load_recipes(user='', cuisine='', meal='');
-        history.pushState({}, '', "/");
+        window.history.pushState({}, '', window.location.origin + "/");
     });
 
     // Run when cuisines is clicked
     document.querySelector('#Cuisines-link').addEventListener('click', () => {
         generate_page('Cuisines', '/cuisines', '#cuisines');
-        history.pushState({}, '', "/cuisines");
+        window.history.pushState({}, '', window.location.origin + "/cuisines");
     });
 
     // Run when meals is clicked
     document.querySelector('#Meals-link').addEventListener('click', () => {
         generate_page('Meals', '/meals', '#meals');
-        history.pushState({}, '', "/meals");
+        window.history.pushState({}, '', window.location.origin + "/meals");
     });
 
     // Run when favorites is clicked
     document.querySelector('#Favoirtes-link').addEventListener('click', () => {
         generate_page('My Favorites', '/favorites', '#favorites');
-        history.pushState({}, '', "/favorites");
+        window.history.pushState({}, '', window.location.origin + "/favorites");
     });
 
     // Run when search icon is clicked or enter is pressed
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
             url.searchParams.set('val', search);
 
             // Use pushState to update the URL
-            history.pushState({ path: url.href }, '', url.href);
+            window.history.pushState({ path: url.href }, '', url.href);
         }
     });
 
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 url.searchParams.set('val', search);
 
                 // Use pushState to update the URL
-                history.pushState({ path: url.href }, '', url.href);
+                window.history.pushState({ path: url.href }, '', url.href);
             }
         }
     });
@@ -556,7 +556,13 @@ async function load_recipe(title) {
     document.querySelector('#meals-view').style.display = 'none';
     document.querySelector('#favorites-view').style.display = 'none';
     document.querySelector("#page-banner").style.display = 'none';
-    history.pushState({}, '', "/"+title);
+
+    let base_url = window.location.origin;
+    if (base_url.slice(-1) == "/") {
+        base_url = base_url.slice(0, -1);
+    }
+    console.log(base_url);
+    window.history.pushState({}, '', base_url + "/" +title);
 
     // Send API request to get recipe info
     const recipe_title = title.replaceAll("_"," ");
@@ -1276,7 +1282,20 @@ function loadContent(path) {
         var value = url.searchParams.get('val');
         search_recipes(value);
     } else {
-        const usrname = path.substring(1);
-        load_recipes(user=usrname, cuisine='', meal='');
+        // If path matches logged-in user
+        let usrname = '';
+        let url_path = path.substring(1);
+
+        console.log(url_path);
+        if (document.querySelector('#usrname')) {
+            usrname = document.querySelector('#usrname').innerHTML;
+        }
+
+        if (usrname == url_path) {
+            load_recipes(user=usrname, cuisine='', meal='');
+        }
+        else {
+            load_recipe(url_path);
+        }
     }
 }
