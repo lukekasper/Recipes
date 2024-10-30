@@ -2,18 +2,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Autocomplete feature
     const category = document.querySelector('#id_category');
-    category.addEventListener('input', function() {
-
-        if (category.value.length >= 2) {
-            fetch_autocomplete(category.value, 'category');
-        }
-    })
+    category.addEventListener('input', () => suggestions(category));
 
     // Run when form is submitted
     document.querySelector('#new_recipe-form').addEventListener('submit', (event) => new_recipe(event));
     document.querySelector('#search_bar').style.backgroundColor = "transparent";
     document.querySelector('#search_box').placeholder = "Search disabled on this page.";
 
+    document.addEventListener('click', function(event) {
+        let inputs = document.querySelectorAll('.input_width');
+        inputs.forEach((input) => {
+            if (input.id == "id_meal" || input.id == "id_category")
+            {
+                let suggestionsContainer = document.getElementById('suggestions-' + input.id);
+                if (!input.contains(event.target) && !suggestionsContainer.contains(event.target)) {
+                    suggestionsContainer.innerHTML = '';
+                }
+            }
+        });
+    });
 });
 
 async function new_recipe(event) {
@@ -119,6 +126,25 @@ function getCookie(name) {
     return cookieValue;
 }
 
+async function suggestions(category)
+{
+    if (category.value.length >= 0) {
+        const response = await fetch_autocomplete(category.value, 'category');
+        let suggestionsContainer = document.getElementById('suggestions-id_category');
+        suggestionsContainer.innerHTML = '';
+
+        response.matched_fields.forEach(match => {
+            let suggestionDiv = document.createElement('div');
+            suggestionDiv.textContent = match;
+            suggestionDiv.addEventListener('click', function() {
+                document.getElementById('id_category').value = this.textContent;
+                suggestionsContainer.innerHTML = '';
+            });
+            suggestionsContainer.appendChild(suggestionDiv);
+        })
+    }
+}
+
 
 async function fetch_autocomplete(query, field)
 {
@@ -131,7 +157,7 @@ async function fetch_autocomplete(query, field)
         }
 
         const responseData = await response.json();
-        console.log(responseData);
+        return responseData;
     }
     catch (error) {
         // Handle the error that occurred during the asynchronous operation

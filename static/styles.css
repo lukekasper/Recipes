@@ -537,3 +537,22 @@ h4 {
 #recipe-view {
     margin-top: 30px;
 }
+
+.suggestions {
+    position: absolute;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    left: 190px;
+    background-color: white;
+    z-index: 1000;
+}
+
+.suggestions div {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.suggestions div:hover {
+    background-color: #f0f0f0;
+}
