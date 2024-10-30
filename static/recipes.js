@@ -273,7 +273,12 @@ function make_recipe_html(recipe) {
     const stars = make_stars(recipe);
 
     // create comments button
-    const comments_button = make_html_element('Show Comments', 'comments-button_'+recipe_title, 'comments-button', 'button');
+    let comments_str = 'Show Comments';
+    if (recipe.comments)
+    {
+        comments_str += " (" + recipe.comments.length + ")";
+    }
+    const comments_button = make_html_element(comments_str, 'comments-button_'+recipe_title, 'comments-button', 'button');
     comments_button.addEventListener('click', () => show_comments(recipe.comments, recipe_title));
 
     // make html
@@ -351,7 +356,7 @@ function make_stars(recipe) {
 // create html for showing comments section or hiding it
 function show_comments(comments, title) {
 
-    if (document.querySelector('#comments-button_'+title).innerHTML == 'Show Comments') {
+    if (document.querySelector('#comments-button_'+title).innerHTML.includes('Show Comments')) {
 
         // show comments div
         document.querySelector('#comments-div_'+title).style.display = 'block';
@@ -388,7 +393,7 @@ function show_comments(comments, title) {
         add_comment_button.style.height = "25px";
         add_comment_button.style.fontSize = "11px";
 
-        // if the user has something written in the textarea, submit comment and append html when 'Add Button' is clicked
+        // if the user has something written in the textarea, submit comment and append html when 'Add Comment' is clicked
         add_comment_button.addEventListener('click', () => {
             if (add_comment_box.value.length > 1) {
                 add_comment(add_comment_box.value, title);
@@ -412,7 +417,12 @@ function show_comments(comments, title) {
             200
         );
         setTimeout(()=> {document.querySelector('#comments-div_'+title).style.display = 'none'},180);
-        document.querySelector('#comments-button_'+title).innerHTML = 'Show Comments'
+        let comments_str = 'Show Comments';
+        if (comments)
+        {
+            comments_str += " (" + comments.length + ")";
+        }
+        document.querySelector('#comments-button_'+title).innerHTML = comments_str;
     }
 }
 
@@ -427,13 +437,10 @@ function make_comment_html(comment, title) {
 
     // add an option to delete comment if it the signed in user posted it
     const usr_el = document.querySelector('#name');
+    let usrname = undefined;
     if (usr_el) {
-        const usrname = usr_el.innerHTML;
+        usrname = usr_el.innerHTML;
     }
-    else {
-        const usrname = undefined;
-    }
-
 
     const x = make_image_html("https://icons.veryicon.com/png/o/miscellaneous/kqt/close-116.png", 'x'+comment.id);
     x.setAttribute('class','x');
@@ -442,7 +449,6 @@ function make_comment_html(comment, title) {
     document.querySelector('#comments-container_'+title).prepend(comment_p);
 
     if (typeof usrname !== 'undefined' && usrname == comment.poster) {
-
         // display when mouseover
         comment_p.addEventListener('mouseover', () => {x.style.display = 'block'});
 
@@ -458,6 +464,8 @@ async function remove_comment(comment, comment_p) {
 
     // send API request to remove comment from backend
     const responseJSON = await getData('/remove_comment/' + comment.id, 'DELETE');
+
+    console.log("removed!");
 
     if (!responseJSON.responseError) {
         comment_p.remove();
