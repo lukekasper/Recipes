@@ -465,8 +465,6 @@ async function remove_comment(comment, comment_p) {
     // send API request to remove comment from backend
     const responseJSON = await getData('/remove_comment/' + comment.id, 'DELETE');
 
-    console.log("removed!");
-
     if (!responseJSON.responseError) {
         comment_p.remove();
     }
