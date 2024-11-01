@@ -25,6 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-&l9i%^s3^l(1l*u+op7)hl!*t$u^q%@y_b7*!l8lma#-a$bxoo'
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
+# Timezone
+TIME_ZONE = 'America/New_York'
+USE_TZ = True
+
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
 DEBUG = True

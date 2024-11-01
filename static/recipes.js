@@ -584,7 +584,9 @@ async function load_recipe(title) {
         document.querySelector('#recipe-info-lists').innerHTML = '';
 
         // Create recipe html
+        const image_container = make_html_element('', 'image-container', 'image-container', 'div');
         const image = make_image_html(data.recipe.image, 'recipe-image');
+        image_container.append(image);
 
         // Add title to page header and make buttons
         const title = make_html_element(data.recipe.title, 'recipe-title', 'recipe-title', 'h2');
@@ -720,7 +722,7 @@ async function load_recipe(title) {
         middle_div.append(edit_div);
 
         // Append recipe info and image to index layout
-        document.querySelector("#recipe-image-div").append(image);
+        document.querySelector("#recipe-image-div").append(image_container);
         document.querySelector("#top-recipe-info").append(title_container);
         document.querySelector("#top-recipe-info").append(top_div);
         document.querySelector("#top-recipe-info").append(box_div);
@@ -803,11 +805,12 @@ function edit_view(subrec_list) {
 
     document.querySelector("#notes_div").style.display = "block";
 
-    // Assign recipie contents to variables
+    // Assign recipe contents to variables
     const edit_button = document.querySelector("#edit-button");
     let edit_div = document.querySelector("#edit_div");
 
     const cat_info = document.querySelector("#cat-info");
+    const meal_info = document.querySelector("#meal-info");
     const time_info = document.querySelector("#time-info");
 
     const ing_list = document.querySelector("#ing_ul");
@@ -832,13 +835,36 @@ function edit_view(subrec_list) {
     editor.removeEventListener('keydown', add_bullets);
     editor.addEventListener('keydown', add_bullets);
 
+    // Add upload image button
+    const image_input = document.createElement("input");
+    image_input.setAttribute('id', 'image-input');
+    image_input.setAttribute('class', 'image-input');
+    image_input.setAttribute('type', 'file');
+    document.querySelector("#image-container").append(image_input);
+
+    image_input.addEventListener('change', function(event) {
+        const file = image_input.files[0];
+        const image = document.querySelector("#recipe-image");
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                image.src = e.target.result; // Set the image source to the data URL
+            };
+
+            reader.readAsDataURL(file); // Read the file as a data URL
+        }
+    });
+
     // Make button to save updated text
     const update_button = make_html_element("Update Recipe", 'update-button', 'btn btn-sm btn-outline-primary', 'button');
     edit_div.append(update_button);
     update_button.addEventListener('click', () => update_recipe());
 
-    // Add UI for editing different recipie contents
+    // Add UI for editing different recipe contents
     edit_UI(cat_info);
+    edit_UI(meal_info);
     edit_UI(time_info);
     edit_UI(ing_list);
     edit_UI(dir_list);
@@ -1000,6 +1026,11 @@ async function save_updates(title) {
     formData.append('ingredients', ingredients_list);
     formData.append('instructions', directions_list);
     formData.append('notes', notes_list);
+
+    if(document.querySelector('#image-input').files[0])
+    {
+        formData.append('image', document.querySelector('#image-input').files[0]);
+    }
 
     // send API request to update recipe content
     const responseJSON = await postData('/update_recipe/'+title, formData, 'POST')
@@ -1202,13 +1233,16 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
 async function postData(url, data, apiMethod) {
     let responseJSON = {responseData: '', responseError: ''};
     showSpinner(spinner);
-    
+
+    const headers = {};
+    if (!url.includes('update_recipe')) {
+        headers['Content-Type'] = 'application/json';
+    }
+
     try {
         const response = await fetch(url, {
             method: apiMethod,
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: headers,
             body: data
         });
 

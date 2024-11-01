@@ -87,6 +87,7 @@ function process_list(id) {
     let str_list = document.querySelector('#' + id).value;
 
     // Split by ';' so user can input multiple items at once
+    str_list = str_list.replace(/\n/g, ";")
     str_list = str_list.split(";");
 
     str_list.forEach((item) => {

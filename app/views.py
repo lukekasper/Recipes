@@ -274,22 +274,21 @@ def update_recipe(request, title):
             # Get Form data
             category = request.POST.get("category")
             category = category[0].upper() + category[1:].lower()
-
             meal = request.POST.get("meal")
             meal = meal[0].upper() + meal[1:].lower()
-
             cooktime = request.POST.get("cooktime")
+            if request.FILES.get("image", False):
+                image = request.FILES["image"]
 
-            # add ingredients and directions
+            # Add ingredients and directions
             ingredients = list(request.POST.get("ingredients").split(","))
             ingredients_str = ''
             for ingredient in ingredients:
                 ingredients_str += ingredient + ","
             ingredients_str = ingredients_str[:-1]
-
             instructions = request.POST.get("instructions")
 
-            # add notes to recipe model if notes were uploaded, otherwise leave blank
+            # Add notes to recipe model if notes were uploaded, otherwise leave blank
             if request.POST.get("notes", False):
                 notes = request.POST.get("notes")
             else:
@@ -302,8 +301,8 @@ def update_recipe(request, title):
             recipe.meal = meal
             recipe.cooktime = cooktime
             recipe.note = notes
+            recipe.image = image
             recipe.save()
-
             return JsonResponse({"message": "Recipe updated."}, status=200)
 
         except ObjectDoesNotExist:

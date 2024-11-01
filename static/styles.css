@@ -473,7 +473,7 @@ h4 {
 #help-box1 {
     margin-left: 20px;
     margin-top: 10px;
-    height: 70px;
+    height: 100px;
     width: 600px;
 }
 
@@ -555,4 +555,25 @@ h4 {
 
 .suggestions div:hover {
     background-color: #f0f0f0;
+}
+
+#image-container {
+    position: relative;
+    display: inline-block;
+}
+
+#image-input {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    width: 240px;
+    height: 50px;
+    font-size: 14px;
 }
