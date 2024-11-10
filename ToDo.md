@@ -5,5 +5,4 @@
 - [ ] Autocomplete search functionality
   - [ ] Dropdowns for Cuisine type
 - [ ] Ability to search for users to get user's recipes
-- [ ] Ability to upload photo in edit menu
-- [ ] Try to debug daphne's issue
+- [ ] Fix "single recipe" route so you don't get a 404 page not found error
