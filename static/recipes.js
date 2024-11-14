@@ -1308,6 +1308,7 @@ function hideSpinner(spinner) {
 
 // Function to load content based on the current path
 function loadContent(path) {
+
     if (path === '/') {
         load_recipes(user='', cuisine='', meal='');
     } else if (path.startsWith('/cuisines')) {

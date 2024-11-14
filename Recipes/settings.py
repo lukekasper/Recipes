@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.timezone.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'Recipes.urls'
@@ -88,10 +89,14 @@ WSGI_APPLICATION = 'Recipes.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgres://localhost')
+    'default': dj_database_url.config(
+        default='postgres://localhost',
+        options={'options': '-c timezone=America/New_York'}
+    )
 }
 db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES['default'].update(db_from_env)
+
 
 AUTH_USER_MODEL = "app.User"
 
