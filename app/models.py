@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from PIL import Image
+from django.utils import timezone
 
 import re
 
@@ -105,6 +106,7 @@ class Recipe(models.Model):
             return None
 
     def serialize(self):
+        local_timestamp = timezone.localtime(self.timestamp)
         return {
             "id": self.id,
             "title": self.title,
@@ -115,7 +117,7 @@ class Recipe(models.Model):
             "meal": self.meal,
             "image": self.image.url,
             "cooktime": self.cooktime,
-            "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
+            "timestamp": local_timestamp.strftime("%b %d %Y, %I:%M %p"),
             "note": self.note,
             "rating": self.avg_rating(),
             "num_ratings": self.num_ratings(),
