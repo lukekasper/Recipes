@@ -169,7 +169,7 @@ async function generate_page(title, api_path, id) {
     }
 }
 
-function load_recipes(user, cuisine, meal) {
+async function load_recipes(user, cuisine, meal) {
 
     // clean errors
     //document.querySelector("#query_error").innerHTML = '';
@@ -194,37 +194,38 @@ function load_recipes(user, cuisine, meal) {
 
     // get requested recipes and generate html (user recipes, recipes by cuisine, or all recipes)
     if (user != '') {
-        num_recipes = query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
+        num_recipes = await query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
     }
     else if (cuisine != '') {
-        num_recipes = query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
+        num_recipes = await query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
     }
     else if (meal != '') {
-        num_recipes = query_recipes('/meal_recipes/'+meal, 'meal_recipes', '"' + meal + '" Recipes', start, end);
+        num_recipes = await query_recipes('/meal_recipes/'+meal, 'meal_recipes', '"' + meal + '" Recipes', start, end);
     }
     else {
-        num_recipes = query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
+        num_recipes = await query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
     }
 
     // if bottom of screen is reached, load the next 10 recipes
-    window.onscroll = () => {
+    window.onscroll = async () => {
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight && end < num_recipes) {
             start += 10; // update counter
             end += 10;
 
             // get requested recipes and generate html (user recipes, recipes by cuisine, or all recipes)
             if (user != '') {
-                num_recipes = query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
+                num_recipes = await query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
             }
             else if (cuisine != '') {
-                num_recipes = query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
+                num_recipes = await query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
             }
             else if (meal != '') {
-                num_recipes = query_recipes('/meal_recipes/'+meal, 'meal_recipes', '"' + meal + '" Recipes', start, end);
+                num_recipes = await query_recipes('/meal_recipes/'+meal, 'meal_recipes', '"' + meal + '" Recipes', start, end);
             }
             else {
-                num_recipes = query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
+                num_recipes = await query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
             }
+            window.scrollTo(0, document.body.scrollHeight);
         }
     };
 }
