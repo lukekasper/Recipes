@@ -640,7 +640,7 @@ def paginate_recipes(request, recipes):
     end = start + 10
     total_recipes = len(recipes)
 
-    start = min(start, abs(total_recipes - 1))
+    start = min(start, abs(total_recipes))
     end = min(end, total_recipes)
 
     # return appropriate recipes
