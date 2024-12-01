@@ -4,7 +4,7 @@ from PIL import Image
 from django.utils import timezone
 from io import BytesIO
 from django.core.files.base import ContentFile
-
+import boto3
 import re
 
 
@@ -31,7 +31,7 @@ class Recipe(models.Model):
     instructions = models.CharField(max_length=50000, null=True, blank=True)
     category = models.CharField(max_length=50, null=True)
     meal = models.CharField(max_length=50, null=True)
-    image = models.ImageField(upload_to='images/', blank=True)
+    image = models.ImageField(upload_to='media/images', blank=True)
     cooktime = models.CharField(max_length=50, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     note = models.CharField(max_length=500, blank=True)
@@ -44,6 +44,7 @@ class Recipe(models.Model):
         super().save(*args, **kwargs)  # Call the "real" save() method to save the image field
         if self.image:
             img = Image.open(self.image.file)
+            img = img.convert('RGB')
             width, height = img.size
             min_side = min(width, height)
             left = (width - min_side) / 2
@@ -55,6 +56,14 @@ class Recipe(models.Model):
             img.save(img_io, format='JPEG')
             img_content = ContentFile(img_io.getvalue(), self.image.name)
             self.image.save(self.image.name, img_content, save=False)
+
+            # Upload the image to S3
+            s3 = boto3.client('s3')
+            bucket = 'lm-home-cookin-bucket'
+            try:
+                s3.upload_fileobj(BytesIO(img_io.getvalue()), bucket, f'media/images/{self.image.name}')
+            except Exception as e:
+                print(f"Error uploading to S3: {e}")
 
     def user_rating_dict(self):
         """

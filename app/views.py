@@ -9,10 +9,6 @@ from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
-import boto3
-import tempfile
-
-
 from .models import User, Recipe, Comment
 
 
@@ -146,19 +142,6 @@ def add_recipe(request):
             if request.FILES.get("image", False):
                 #image = request.FILES["image"]
                 image = request.FILES["image"]
-
-                with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                    for chunk in image.chunks():
-                        temp_file.write(chunk)
-                    temp_file.flush()
-                    s3 = boto3.client('s3')
-                    bucket = 'lm-home-cookin-bucket'
-                    try: 
-                        s3.upload_fileobj(temp_file, bucket, f'media/images/{image.name}')
-                        print(f"Successfully uploaded file: {image.name}")
-                    except Exception as e:
-                        print(f"Failed to upload file: {e}")
-                        return JsonResponse({"message": f"Failed to upload file: {str(e)}"}, status=500)
             else:
                 image = "images/no_image.jpeg"
 
