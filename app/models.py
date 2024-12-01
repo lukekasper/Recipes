@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from PIL import Image
 from django.utils import timezone
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 import re
 
@@ -41,7 +43,7 @@ class Recipe(models.Model):
         """
         super().save(*args, **kwargs)  # Call the "real" save() method to save the image field
         if self.image:
-            img = Image.open(self.image.path)
+            img = Image.open(self.image.file)
             width, height = img.size
             min_side = min(width, height)
             left = (width - min_side) / 2
@@ -49,7 +51,10 @@ class Recipe(models.Model):
             right = (width + min_side) / 2
             bottom = (height + min_side) / 2
             img = img.crop((left, top, right, bottom))
-            img.save(self.image.path)
+            img_io = BytesIO()
+            img.save(img_io, format='JPEG')
+            img_content = ContentFile(img_io.getvalue(), self.image.name)
+            self.image.save(self.image.name, img_content, save=False)
 
     def user_rating_dict(self):
         """
