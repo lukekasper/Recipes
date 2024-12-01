@@ -31,7 +31,7 @@ class Recipe(models.Model):
     instructions = models.CharField(max_length=50000, null=True, blank=True)
     category = models.CharField(max_length=50, null=True)
     meal = models.CharField(max_length=50, null=True)
-    image = models.ImageField(blank=True)
+    image = models.ImageField(upload_to='images', blank=True)
     cooktime = models.CharField(max_length=50, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     note = models.CharField(max_length=500, blank=True)
