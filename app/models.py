@@ -40,7 +40,7 @@ class Recipe(models.Model):
         Override image save method to crop photo to square for display.
         """
         if self.image:
-            print(f"Image path: {self.image.path}")
+            print(f"Image name: {self.image.name}")
             print(f"Image URL: {self.image.url}")
             try:
                 self.image.file.seek(0)  # Reset file pointer
