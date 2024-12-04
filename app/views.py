@@ -342,10 +342,15 @@ def update_rating(request, name):
             # check if rating is an int from 1-5
             if not isinstance(rating, int) or rating < 1 or rating > 5:
                 return JsonResponse({"error": "Invalid rating. Rating must be an integer between 1 and 5."}, status=400)
+            
+            print("Valid Rating")
+
 
             # either add new entry or update existing entry and save
             rating_dict[signed_user] = rating
             recipe.user_rating = str(rating_dict)
+
+            print("Entry Updated")
 
             recipe.save()
             print(f"Successfully updated rating for {name}")
