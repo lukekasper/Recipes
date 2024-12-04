@@ -10,10 +10,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from .models import User, Recipe, Comment
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 def login_view(request):
     """
@@ -334,14 +330,14 @@ def update_rating(request, name):
         # get recipe info and convert user ratings into a dictionary
 
         recipe = Recipe.objects.get(title=name)
-        logger.info(f"Received PUT request for {name}")
+        print(f"Received PUT request for {name}")
         try:
             rating_dict = recipe.user_rating_dict()
             signed_user = request.user.username
             rating = json.loads(request.body)
             rating = int(rating)
 
-            logger.info(f"Parsed rating: {rating}")
+            print(f"Parsed rating: {rating}")
 
             # check if rating is an int from 1-5
             if not isinstance(rating, int) or rating < 1 or rating > 5:
@@ -352,7 +348,7 @@ def update_rating(request, name):
             recipe.user_rating = str(rating_dict)
 
             recipe.save()
-            logger.info(f"Successfully updated rating for {name}")
+            print(f"Successfully updated rating for {name}")
             return JsonResponse({"avg_rating": recipe.avg_rating(), "num_ratings": recipe.num_ratings()})
 
         # return error code if invalid JSON data
