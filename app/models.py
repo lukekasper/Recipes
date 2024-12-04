@@ -43,10 +43,15 @@ class Recipe(models.Model):
         if self.image:
             print(f"Image name: {self.image.name}")
             print(f"Image URL: {self.image.url}")
+            print(f"Image path: {self.image.url}")
+
+            AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+            AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
             if "images/images" in self.image.name:
                 self.image.name = os.path.basename(self.image.name)
-                print(f"Corrected Image Name: {self.image.name}")
+                self.image.path = f'/media/images/{self.image.name}'
+                self.image.url = f'https://{AWS_S3_CUSTOM_DOMAIN}/images/{self.image.name}'
             self.image.file.seek(0)  # Reset file pointer
             img = Image.open(self.image.file)
 
