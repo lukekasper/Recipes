@@ -40,8 +40,11 @@ class Recipe(models.Model):
         Override image save method to crop photo to square for display.
         """
         if self.image:
+            print("self.image")
             img = Image.open(self.image.file)
+            print("Image opened")
             img = img.convert('RGB')
+            print("Image rgb")
             width, height = img.size
             min_side = min(width, height)
             left = (width - min_side) / 2
@@ -49,12 +52,14 @@ class Recipe(models.Model):
             right = (width + min_side) / 2
             bottom = (height + min_side) / 2
             img = img.crop((left, top, right, bottom))
-
+            print("Image cropped")
             img_io = BytesIO()
             img.save(img_io, format='JPEG')
+            print("Image io saved")
 
             self.image.save(self.image.name, img_io, save=False)
 
+        print("Super Save")
         super().save(*args, **kwargs)  # Call the "real" save() method to save the image field
 
 
