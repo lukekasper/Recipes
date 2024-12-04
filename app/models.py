@@ -36,48 +36,48 @@ class Recipe(models.Model):
     note = models.CharField(max_length=500, blank=True)
     user_rating = models.CharField(max_length=50000, null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        """
-        Override image save method to crop photo to square for display.
-        """
-        if self.image:
-            print(f"Image name: {self.image.name}")
-            print(f"Image URL: {self.image.url}")
-            print(f"Image path: {self.image.path}")
+    # def save(self, *args, **kwargs):
+    #     """
+    #     Override image save method to crop photo to square for display.
+    #     """
+    #     if self.image:
+    #         print(f"Image name: {self.image.name}")
+    #         print(f"Image URL: {self.image.url}")
+    #         print(f"Image path: {self.image.path}")
 
-            AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-            AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    #         AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+    #         AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
-            if "images/images" in self.image.name:
-                self.image.name = os.path.basename(self.image.name)
-                print(f"Corrected name: {self.image.name}")
-                self.image.path = f'/media/images/{self.image.name}'
-                print(f"Corrected URL: {self.image.url}")
-                self.image.url = f'https://{AWS_S3_CUSTOM_DOMAIN}/images/{self.image.name}'
-                print(f"Corrected path: {self.image.path}")
+    #         if "images/images" in self.image.name:
+    #             self.image.name = os.path.basename(self.image.name)
+    #             print(f"Corrected name: {self.image.name}")
+    #             self.image.path = f'/media/images/{self.image.name}'
+    #             print(f"Corrected URL: {self.image.url}")
+    #             self.image.url = f'https://{AWS_S3_CUSTOM_DOMAIN}/images/{self.image.name}'
+    #             print(f"Corrected path: {self.image.path}")
 
-            self.image.file.seek(0)  # Reset file pointer
-            img = Image.open(self.image.file)
+    #         self.image.file.seek(0)  # Reset file pointer
+    #         img = Image.open(self.image.file)
 
-            print("Image opened")
-            img = img.convert('RGB')
-            print("Image rgb")
-            width, height = img.size
-            min_side = min(width, height)
-            left = (width - min_side) / 2
-            top = (height - min_side) / 2
-            right = (width + min_side) / 2
-            bottom = (height + min_side) / 2
-            img = img.crop((left, top, right, bottom))
-            print("Image cropped")
-            img_io = BytesIO()
-            img.save(img_io, format='JPEG')
-            print("Image io saved")
+    #         print("Image opened")
+    #         img = img.convert('RGB')
+    #         print("Image rgb")
+    #         width, height = img.size
+    #         min_side = min(width, height)
+    #         left = (width - min_side) / 2
+    #         top = (height - min_side) / 2
+    #         right = (width + min_side) / 2
+    #         bottom = (height + min_side) / 2
+    #         img = img.crop((left, top, right, bottom))
+    #         print("Image cropped")
+    #         img_io = BytesIO()
+    #         img.save(img_io, format='JPEG')
+    #         print("Image io saved")
 
-            self.image.save(self.image.name, img_io, save=False)
+    #         self.image.save(self.image.name, img_io, save=False)
 
-        print("Super Save")
-        super().save(*args, **kwargs)  # Call the "real" save() method to save the image field
+    #     print("Super Save")
+    #     super().save(*args, **kwargs)  # Call the "real" save() method to save the image field
 
 
     def user_rating_dict(self):
