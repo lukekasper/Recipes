@@ -4,6 +4,7 @@ from PIL import Image
 from django.utils import timezone
 from io import BytesIO
 import re
+import os
 
 
 class User(AbstractUser):
@@ -42,12 +43,13 @@ class Recipe(models.Model):
         if self.image:
             print(f"Image name: {self.image.name}")
             print(f"Image URL: {self.image.url}")
-            try:
-                self.image.file.seek(0)  # Reset file pointer
-                img = Image.open(self.image.file)
-                # Proceed with your image processing logic
-            except Exception as e:
-                print(f"Error opening image file: {e}")
+
+            if "images/images" in self.image.name:
+                self.image.name = os.path.basename(self.image.name)
+                print(f"Corrected Image Name: {self.image.name}")
+            self.image.file.seek(0)  # Reset file pointer
+            img = Image.open(self.image.file)
+
             print("Image opened")
             img = img.convert('RGB')
             print("Image rgb")
