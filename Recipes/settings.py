@@ -32,7 +32,7 @@ USE_TZ = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 #DEBUG = True
-DEBUG = True
+DEBUG = False
 
 #ALLOWED_HOSTS = []
 ALLOWED_HOSTS = ["house-recipes-c027ea0d2288.herokuapp.com", "127.0.0.1"]
@@ -155,5 +155,4 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Media settings
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
