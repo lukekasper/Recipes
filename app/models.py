@@ -41,7 +41,12 @@ class Recipe(models.Model):
         """
         if self.image:
             print("self.image")
-            img = Image.open(self.image.file)
+            try:
+                self.image.file.seek(0)  # Reset file pointer
+                img = Image.open(self.image.file)
+                # Proceed with your image processing logic
+            except Exception as e:
+                print(f"Error opening image file: {e}")
             print("Image opened")
             img = img.convert('RGB')
             print("Image rgb")
