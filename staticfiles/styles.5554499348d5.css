@@ -1,0 +1,579 @@
+.navbar-custom {
+    background-color: #ACE1AF;
+}
+
+h3 {
+    padding: 15px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.outer > div {
+    width: 560px;
+}
+
+#instructions_label {
+    vertical-align: top;
+}
+
+#instructions_entry {
+    height: 100px;
+}
+
+#ingredients_entry {
+    height: 70px;
+}
+
+#recipes-title {
+    float: left;
+    width: 240px;
+    font-family: monaco,Consolas,Lucida Console,monospace;
+}
+
+#new_recipe-link {
+    float: right;
+    margin-right: 40px;
+    font-size: 18px;
+    margin-top: 40px;
+}
+
+#new_recipe-button {
+    margin-top: 60px;
+    margin-left: 20px;
+    margin-bottom: 40px;
+}
+
+#directions {
+    position: relative;
+    width: 100%;
+}
+
+.new_recipe-info {
+    position: absolute;
+    left: 175px;
+    width: 60%;
+}
+
+.container {
+    height: 30px;
+    margin-top: 20px;
+}
+
+.label {
+    position: absolute;
+    left: 15px;
+}
+
+#cooking_container {
+    height: 140px;
+    margin-top: 70px;
+}
+
+#notes-button {
+    position: absolute;
+    left: 472px;
+    margin-top: 62px;
+}
+
+#note_entry {
+    height: 80px;
+}
+
+.input_width {
+    width: 100%;
+}
+
+.notes {
+    width: 100%;
+    margin: 25px;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.category {
+    margin: 0px;
+    font-size: 14px;
+}
+
+.timestamp {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #D0D0D0;
+}
+
+.info-div {
+    height: 220px;
+    padding-left: 30px;
+    margin-top: 15px;
+}
+
+.outer-div {
+    display: flex;
+    height: 220px;
+    width: 60%;
+    float: left;
+}
+
+.image-div {
+    float: left;
+    display: flex;
+    margin-left: 20px;
+    width: 250px;
+    height: 220px;
+    text-align: center;
+    justify-content: center;
+    padding-bottom: 15px;
+}
+
+.checked {
+    color: orange;
+}
+
+hr {
+    clear: both;
+}
+
+.rating {
+    padding-left: 5px;
+}
+
+.num_ratings{
+    padding-left: 5px;
+    color: LightGray;
+}
+
+/* Style the search box inside the navigation bar */
+#search_bar {
+    position: absolute;
+    font-size: 17px;
+    margin-top: 24px;
+    border: solid;
+    right: 12px;
+    width: 300px;
+    background-color: white;
+    border-width: 1px;
+    border-color: LightGray;
+    border-radius: 15px;
+    display: flex;
+}
+
+#nav_bar {
+    width: 100vw;
+}
+
+.nav-link {
+    margin-top: 20px;
+}
+
+.search-button img {
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
+    background-color: white;
+}
+
+#search-button {
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+.matched_recipe-list {
+    padding-top: 10px;
+    font-family: 'Courier New';
+    font-size: 18px;
+}
+
+.search_header {
+    font-style: italic;
+}
+
+.list_div {
+    display: flex;
+    float: left;
+    width: 45%;
+}
+
+h4 {
+    margin-left: 25px;
+}
+
+.nav-link {
+    margin-right: 18px;
+    margin-left: 18px;
+}
+
+.comments-button {
+    border-radius: 5px;
+    background-color: #ACE1AF;
+    color: white;
+    border: solid DarkGray;
+    border-width: 0.5px;
+    font-size: 13px;
+    width: 140px;
+    height: 30px;
+}
+
+.comments-button:hover {
+    outline-style: solid;
+    box-shadow: 0 0 0 3px RoyalBlue;
+}
+
+.comments-div {
+    overflow-y:auto;
+    display: flex;
+    width: 38%;
+    padding: 10px;
+    background-color: #c6e6c7;
+    border-radius: 10px;
+    height: 220px;
+}
+
+.comments-container {
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.comment-poster {
+    font-weight: bold;
+}
+
+.add_comment-button {
+    padding-top: 15px;
+}
+
+.add_comment_box {
+    height: 25px;
+    width: 95%;
+    border-radius: 5px;
+    color: Gray;
+    margin: auto;
+    font-size: 12px;
+}
+
+.add_comment_but {
+    float: right;
+}
+
+.comment-p {
+    display: flex;
+    margin: 3px;
+}
+
+.comments-inner {
+    margin-top: 15px;
+}
+
+.comment_txt {
+    padding-right: 20px;
+}
+
+.x {
+    display: flex;
+    object-fit: cover;
+    height: 12px;
+    width: 12px;
+    padding-top: 5px;
+}
+
+#title-container {
+    display: flex;
+    justify-content: center;
+}
+
+#delete-button {
+    height: 35px;
+    margin-right: 70px;
+    margin-top: 20px;
+}
+
+#recipe-title {
+    text-align: center;
+    padding-top: 15px;
+    font-weight: bold;
+}
+
+#edit-button {
+    height: 35px;
+    margin-left: 70px;
+    margin-top: 20px;
+}
+
+#recipe-image-div {
+    float: left;
+    height: 250px;
+    width: 300px;
+    padding: 20px;
+}
+
+#recipe-image {
+    object-fit: contain;
+    height: 250px;
+    width: 300px;
+}
+
+#top-recipe-info {
+    height: 285px;
+}
+
+#poster-container {
+    color: LightGray;
+    font-size: 14px;
+    padding-left: 20px;
+    padding-top: 1px;
+}
+
+#recipe-poster {
+    font-weight: bold;
+    color: black;
+}
+
+#top-div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 5px;
+}
+
+#recipe-timestamp {
+    color: LightGray;
+    font-size: 14px;
+    padding-left: 20px;
+    padding-top: 1px;
+}
+
+#box_div {
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f5dc;
+    align-items: stretch;
+    height: 100px;
+    position: absolute;
+    left: 350px;
+    padding-left: 50px;
+    right: 30px;
+    border-style: outset;
+}
+
+#recipe-info_box {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    height: auto;
+    margin-top: 15px;
+    padding-left: 5%;
+    grid-column-gap: 15%;
+}
+
+.info {
+    font-weight: normal;
+    font-size: 16px;
+}
+
+.title {
+    font-weight: bold;
+}
+
+#hr-box {
+    position: relative;
+}
+
+.recipe_list_div {
+    font-weight: bold;
+    font-size: 18px;
+    padding-left: 30px;
+    padding-top: 25px;
+}
+
+.recipe_list_items {
+    font-size: 16px;
+    font-weight: normal;
+    padding-top: 3px;
+}
+
+#ing_div {
+    width: 500px;
+}
+
+#notes_div {
+    background-color: #F0F0F0;
+    border-radius: 10px;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 25px;
+    padding-bottom: 10px;
+    padding-top: 25px;
+    height: auto;
+    margin-bottom: 30px;
+    border-style: outset;
+}
+
+#mid_div {
+    display: flex;
+}
+
+#lists_div {
+    width: 50%;
+}
+
+#edit_div {
+    width: 50%;
+}
+
+#text_edit {
+    width: 95%;
+    height: 200px;
+}
+
+#favorites-button {
+    margin-bottom: 30px;
+    margin-left: 30px;
+}
+
+#new-recipe-title {
+    margin: 15px;
+}
+
+#title-div {
+    display: flex;
+    float: left;
+    margin-bottom: 30px;
+    width: 90%;
+}
+
+.outer {
+    width: 90%;
+    clear: both;
+    display: block;
+}
+
+.new-input {
+    width: 900px;
+}
+
+.help-icon {
+    width: 30px;
+    height: 30px;
+    margin-top: 21px;
+    margin-left: 30px;
+}
+
+.help-box {
+    display: none;
+    background-color: beige;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+#help-box1 {
+    margin-left: 20px;
+    margin-top: 10px;
+    height: 100px;
+    width: 600px;
+}
+
+#help-box2 {
+    position: absolute;
+    left: 380px;
+    top: 120px;
+    height: 70px;
+    width: 470px;
+}
+
+#new-recipe-help:hover + #help-box1 {
+    display: block;
+}
+
+#search-help:hover + #help-box2 {
+    display: block;
+}
+
+.nav-link {
+    cursor: pointer;
+}
+
+#search-help {
+    margin-top: 38px;
+    margin-left: 80px;
+}
+
+.login-container {
+    margin: 20px;
+}
+
+.login-container > * {
+    margin-bottom: 20px;
+}
+
+.error {
+    border: 2px solid red;
+}
+
+.error-message {
+    color: red;
+    margin-left: 15px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+#logo {
+    width: 150px;
+    height: 90px;
+}
+
+#logo:hover {
+    cursor: pointer;
+}
+
+#matched_recipes-view {
+    margin-top: 30px;
+}
+
+#recipe-view {
+    margin-top: 30px;
+}
+
+.suggestions {
+    position: absolute;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    left: 190px;
+    background-color: white;
+    z-index: 1000;
+}
+
+.suggestions div {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.suggestions div:hover {
+    background-color: #f0f0f0;
+}
+
+#image-container {
+    position: relative;
+    display: inline-block;
+}
+
+#image-input {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    width: 240px;
+    height: 50px;
+    font-size: 14px;
+}
