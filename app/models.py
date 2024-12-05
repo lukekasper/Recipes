@@ -37,33 +37,6 @@ class Recipe(models.Model):
     note = models.CharField(max_length=500, blank=True)
     user_rating = models.CharField(max_length=50000, null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        if self.image:
-            # Create an S3 client
-            s3 = boto3.client(
-                's3',
-                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                region_name=settings.AWS_S3_REGION_NAME
-            )
-            
-            # Define the S3 bucket name and file path
-            bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-            file_path = f'images/{self.image.name}'
-            
-            # Upload the file to S3
-            s3.upload_fileobj(
-                self.image.file,
-                bucket_name,
-                file_path,
-                ExtraArgs={'ACL': 'public-read'}  # Optional: Set file access permissions
-            )
-            
-            # Update the image field to the S3 URL
-            self.image.name = file_path
-
-        super(Recipe, self).save(*args, **kwargs)
-
 
     # def save(self, *args, **kwargs):
     #     """
