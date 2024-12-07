@@ -277,6 +277,7 @@ def update_recipe(request, title):
             cooktime = request.POST.get("cooktime")
             if request.FILES.get("image", False):
                 image = request.FILES["image"]
+                recipe.image = image
 
             # Add ingredients and directions
             ingredients = list(request.POST.get("ingredients").split(","))
@@ -299,7 +300,6 @@ def update_recipe(request, title):
             recipe.meal = meal
             recipe.cooktime = cooktime
             recipe.note = notes
-            recipe.image = image
 
             recipe.save()
             return JsonResponse({"message": "Recipe updated."}, status=200)
