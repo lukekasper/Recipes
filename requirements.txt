@@ -7,3 +7,4 @@ dj_database_url
 psycopg2-binary
 boto3
 django-storages
+awscli

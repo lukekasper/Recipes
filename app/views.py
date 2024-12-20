@@ -195,7 +195,7 @@ def all_recipes(request):
         recipes = Recipe.objects.all()
         recipes = recipes.order_by("-timestamp").all()
         recipes = paginate_recipes(request, recipes)
-
+        print("working")
         # .serialize() creates a text string for json object
         return JsonResponse({"recipes": [recipe.serialize() for recipe in recipes]})
 

@@ -1,3 +1,6 @@
+import subprocess
+import os
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from PIL import Image
@@ -7,6 +10,7 @@ import boto3
 from django.db import models
 from django.conf import settings
 from django.core.files.storage import default_storage
+from django.core.files.storage import FileSystemStorage
 
 class User(AbstractUser):
     """
@@ -80,6 +84,35 @@ class Recipe(models.Model):
 
     #     print("Super Save")
     #     super().save(*args, **kwargs)  # Call the "real" save() method to save the image field
+
+
+    def save(self, *args, **kwargs):
+        
+        # Construct the AWS CLI command
+        print("working5")
+        bucket_name = os.getenv('BUCKETEER_BUCKET_NAME')
+        object_name = f'media/images/{self.image.name}'
+        print(object_name)
+
+        save_path = os.path.join(settings.MEDIA_ROOT, 'images')
+        fs = FileSystemStorage(location=save_path)
+        fs.save(self.image.name, self.image.file)
+        file_url = save_path + "/" + self.image.name
+        print(file_url)
+
+        command = [
+            'aws', 's3', 'cp', file_url,
+            f's3://{bucket_name}/{object_name}'
+        ]
+
+        try:
+            # Run the command using subprocess
+            result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            print("Upload successful:", result.stdout.decode('utf-8'))
+        except subprocess.CalledProcessError as e:
+            print("Upload failed:", e.stderr.decode('utf-8'))
+
+        super().save(*args, **kwargs)
 
 
     def user_rating_dict(self):
