@@ -1,1 +1,1 @@
-web: gunicorn Recipes.wsgi --log-file -
+web: ./configure_aws.sh && gunicorn Recipes.wsgi --log-file -
