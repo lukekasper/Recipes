@@ -88,31 +88,47 @@ class Recipe(models.Model):
     def save(self, *args, **kwargs):
         
         # Construct the AWS CLI command
-        print("working5")
+        if self.image:
+            bucket_name = os.getenv('BUCKETEER_BUCKET_NAME')
+            object_name = f'media/images/{self.image.name}'
+
+            save_path = os.path.join(settings.MEDIA_ROOT, 'images')
+            fs = FileSystemStorage(location=save_path)
+            fs.save(self.image.name, self.image.file)
+            file_url = save_path + "/" + self.image.name
+
+            command = [
+                'aws', 's3', 'cp', file_url,
+                f's3://{bucket_name}/{object_name}'
+            ]
+
+            try:
+                # Run the command using subprocess
+                result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                print("Upload successful:", result.stdout.decode('utf-8'))
+            except subprocess.CalledProcessError as e:
+                print("Upload failed:", e.stderr.decode('utf-8'))
+
+        super().save(*args, **kwargs)
+
+    
+    def delete(self, *args, **kwargs):
         bucket_name = os.getenv('BUCKETEER_BUCKET_NAME')
         object_name = f'media/images/{self.image.name}'
-        print(object_name)
-
-        save_path = os.path.join(settings.MEDIA_ROOT, 'images')
-        fs = FileSystemStorage(location=save_path)
-        fs.save(self.image.name, self.image.file)
-        file_url = save_path + "/" + self.image.name
-        print(file_url)
-        print(self.image.url)
 
         command = [
-            'aws', 's3', 'cp', file_url,
+            'aws', 's3', 'rm',
             f's3://{bucket_name}/{object_name}'
         ]
 
         try:
             # Run the command using subprocess
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            print("Upload successful:", result.stdout.decode('utf-8'))
+            print("Delete successful:", result.stdout.decode('utf-8'))
         except subprocess.CalledProcessError as e:
-            print("Upload failed:", e.stderr.decode('utf-8'))
+            print("Delete failed:", e.stderr.decode('utf-8'))
 
-        super().save(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
 
     def user_rating_dict(self):
