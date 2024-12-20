@@ -99,6 +99,7 @@ class Recipe(models.Model):
         fs.save(self.image.name, self.image.file)
         file_url = save_path + "/" + self.image.name
         print(file_url)
+        print(self.image.url)
 
         command = [
             'aws', 's3', 'cp', file_url,
