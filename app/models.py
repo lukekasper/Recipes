@@ -114,7 +114,7 @@ class Recipe(models.Model):
     
     def delete(self, *args, **kwargs):
         bucket_name = os.getenv('BUCKETEER_BUCKET_NAME')
-        object_name = f'media/images/{self.image.name}'
+        object_name = f'media/{self.image.name}'
 
         command = [
             'aws', 's3', 'rm',
