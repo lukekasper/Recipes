@@ -94,6 +94,11 @@ function process_list(id) {
 
         item = item.trim();
 
+        if (item[0] == "-") {
+            item = item.slice(1);
+            item = item.trim();
+        }
+
         if (item != " " && item != "") {
 
             let processed_item = item.charAt(0).toUpperCase() + item.slice(1);

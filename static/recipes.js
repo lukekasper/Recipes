@@ -997,7 +997,8 @@ function update_recipe() {
                 }
 
                 if (line[0] == '-') {
-                    line = line.slice(2);
+                    line = line.slice(1);
+                    line = line.trim();
                     line = line.charAt(0).toUpperCase() + line.slice(1)
                 }
 
