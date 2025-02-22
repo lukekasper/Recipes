@@ -209,6 +209,8 @@ async function load_recipes(user, cuisine, meal) {
     // if bottom of screen is reached, load the next 10 recipes
     window.onscroll = async () => {
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight && end < num_recipes) {
+            
+            const currentScrollPosition = window.scrollY;
             start += 10; // update counter
             end += 10;
 
@@ -225,7 +227,8 @@ async function load_recipes(user, cuisine, meal) {
             else {
                 num_recipes = await query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
             }
-            window.scrollTo(0, document.body.scrollHeight);
+            
+            window.scrollTo(0, currentScrollPosition);
         }
     };
 }
@@ -997,7 +1000,8 @@ function update_recipe() {
                 }
 
                 if (line[0] == '-') {
-                    line = line.slice(2);
+                    line = line.slice(1);
+                    line = line.trim();
                     line = line.charAt(0).toUpperCase() + line.slice(1)
                 }
 

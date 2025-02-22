@@ -227,8 +227,14 @@ async function load_recipes(user, cuisine, meal) {
             else {
                 num_recipes = await query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
             }
+            setTimeout(() => {
+                console.log(currentScrollPosition)
+                console.log(document.body.scrollHeight)
+            }, 4000);
             
-            window.scrollTo(0, currentScrollPosition);
+
+            
+            //window.scrollTo(0, currentScrollPosition);
         }
     };
 }
