@@ -208,12 +208,11 @@ async function load_recipes(user, cuisine, meal) {
 
     // if bottom of screen is reached, load the next 10 recipes
     window.onscroll = async () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && num_recipes > 0) {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && end < num_recipes) {
             
             const currentScrollPosition = window.scrollY;
             start += 10; // update counter
             end += 10;
-            num_recipes = 0;
 
             // get requested recipes and generate html (user recipes, recipes by cuisine, or all recipes)
             if (user != '') {
@@ -244,6 +243,7 @@ async function query_recipes(api_path, key, title, start, end) {
 
         // render a div for each post, displaying relevant info
         const data = responseJSON.responseData;
+        console.log(data);
 
         data[key].forEach(recipe => {
 
@@ -254,7 +254,7 @@ async function query_recipes(api_path, key, title, start, end) {
         // update page title
         document.querySelector('#recipes-title').innerHTML = title;
 
-        return data.remaining;
+        return data[key].length;
     }
 }
 

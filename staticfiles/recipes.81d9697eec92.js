@@ -206,14 +206,21 @@ async function load_recipes(user, cuisine, meal) {
         num_recipes = await query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
     }
 
+    console.log("Start: " + start);
+    console.log("End: " + end);
+    console.log("Num Recipes: " + num_recipes);
+
+    flag = 0;
+
     // if bottom of screen is reached, load the next 10 recipes
+    
     window.onscroll = async () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && num_recipes > 0) {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && num_recipes > 10  && flag == 0) {
             
             const currentScrollPosition = window.scrollY;
             start += 10; // update counter
             end += 10;
-            num_recipes = 0;
+            flag = 1
 
             // get requested recipes and generate html (user recipes, recipes by cuisine, or all recipes)
             if (user != '') {
@@ -228,6 +235,12 @@ async function load_recipes(user, cuisine, meal) {
             else {
                 num_recipes = await query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
             }
+
+            console.log("Start: " + start);
+            console.log("End: " + end);
+            console.log("Num Recipes: " + num_recipes);
+
+            flag = 0
             
             window.scrollTo(0, currentScrollPosition);
         }
@@ -238,6 +251,7 @@ async function load_recipes(user, cuisine, meal) {
 async function query_recipes(api_path, key, title, start, end) {
 
     // Send API request to get recipes
+    console.log(api_path);
     const responseJSON = await getData(api_path, 'GET', 'start', start, 'end', end);
 
     if (!responseJSON.responseError) {

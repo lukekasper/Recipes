@@ -194,10 +194,10 @@ def all_recipes(request):
     try:
         recipes = Recipe.objects.all()
         recipes = recipes.order_by("-timestamp").all()
-        recipes = paginate_recipes(request, recipes)
+        recipes, remaining = paginate_recipes(request, recipes)
 
         # .serialize() creates a text string for json object
-        return JsonResponse({"recipes": [recipe.serialize() for recipe in recipes]})
+        return JsonResponse({"recipes": [recipe.serialize() for recipe in recipes], "remaining": remaining})
 
     # Handle invalid input (e.g., non-integer values for start/end)
     except ValueError:
@@ -410,10 +410,10 @@ def my_recipes(request):
         user = request.user
         user_recipes = Recipe.objects.filter(user=user)
         user_recipes = user_recipes.order_by("-timestamp").all()
-        user_recipes = paginate_recipes(request, user_recipes)
+        user_recipes, remaining = paginate_recipes(request, user_recipes)
 
         # .serialize() creates a text string for json object
-        return JsonResponse({"user_recipes": [recipe.serialize() for recipe in user_recipes]})
+        return JsonResponse({"recipes": [recipe.serialize() for recipe in user_recipes], "remaining": remaining})
 
     except ValueError:
         # Handle invalid input (e.g., non-integer values for start/end)
@@ -479,10 +479,10 @@ def cuisine_recipes(request, cuisine):
     try:
         recipes = Recipe.objects.filter(category=cuisine)
         recipes = recipes.order_by("-timestamp").all()
-        recipes = paginate_recipes(request, recipes)
+        recipes, remaining = paginate_recipes(request, recipes)
 
         # .serialize() creates a text string for json object
-        return JsonResponse({"cuisine_recipes": [recipe.serialize() for recipe in recipes]})
+        return JsonResponse({"recipes": [recipe.serialize() for recipe in recipes], "remaining": remaining})
 
     # return error code if any other exception occurs
     except Exception as e:
@@ -500,10 +500,10 @@ def meal_recipes(request, meal):
     try:
         recipes = Recipe.objects.filter(meal=meal)
         recipes = recipes.order_by("-timestamp").all()
-        recipes = paginate_recipes(request, recipes)
+        recipes, remaining = paginate_recipes(request, recipes)
 
         # .serialize() creates a text string for json object
-        return JsonResponse({"meal_recipes": [recipe.serialize() for recipe in recipes]})
+        return JsonResponse({"recipes": [recipe.serialize() for recipe in recipes], "remaining": remaining})
 
     # return error code if any other exception occurs
     except Exception as e:
@@ -641,12 +641,12 @@ def paginate_recipes(request, recipes):
     end = start + 10
     total_recipes = len(recipes)
 
-    start = min(start, abs(total_recipes))
+    start = min(start, total_recipes)
     end = min(end, total_recipes)
 
     # return appropriate recipes
     recipes = recipes[start:end]
-    return recipes
+    return recipes, total_recipes - end
 
 
 def autocomplete(request):

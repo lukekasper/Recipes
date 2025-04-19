@@ -206,32 +206,42 @@ async function load_recipes(user, cuisine, meal) {
         num_recipes = await query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
     }
 
-    // if bottom of screen is reached, load the next 10 recipes
-    window.onscroll = async () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && num_recipes > 0) {
-            
-            const currentScrollPosition = window.scrollY;
-            start += 10; // update counter
-            end += 10;
-            num_recipes = 0;
+    console.log("Start: " + start);
+    console.log("End: " + end);
+    console.log("Num Recipes: " + num_recipes);
 
-            // get requested recipes and generate html (user recipes, recipes by cuisine, or all recipes)
-            if (user != '') {
-                num_recipes = await query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
+    // if bottom of screen is reached, load the next 10 recipes
+    setTimeout(() => {
+    
+        window.onscroll = async () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight && num_recipes > 10) {
+                
+                const currentScrollPosition = window.scrollY;
+                start += 10; // update counter
+                end += 10;
+
+                // get requested recipes and generate html (user recipes, recipes by cuisine, or all recipes)
+                if (user != '') {
+                    num_recipes = await query_recipes('/my_recipes', 'user_recipes', user+"'s Recipes", start, end);
+                }
+                else if (cuisine != '') {
+                    num_recipes = await query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
+                }
+                else if (meal != '') {
+                    num_recipes = await query_recipes('/meal_recipes/'+meal, 'meal_recipes', '"' + meal + '" Recipes', start, end);
+                }
+                else {
+                    num_recipes = await query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
+                }
+
+                console.log("Start: " + start);
+                console.log("End: " + end);
+                console.log("Num Recipes: " + num_recipes);
+                
+                window.scrollTo(0, currentScrollPosition);
             }
-            else if (cuisine != '') {
-                num_recipes = await query_recipes('/cuisine_recipes/'+cuisine, 'cuisine_recipes', '"' + cuisine + '" Recipes', start, end);
-            }
-            else if (meal != '') {
-                num_recipes = await query_recipes('/meal_recipes/'+meal, 'meal_recipes', '"' + meal + '" Recipes', start, end);
-            }
-            else {
-                num_recipes = await query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
-            }
-            
-            window.scrollTo(0, currentScrollPosition);
-        }
-    };
+        };
+    }, 2000);
 }
 
 // query recipes and generate html

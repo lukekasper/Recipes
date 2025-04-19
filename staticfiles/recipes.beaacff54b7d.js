@@ -208,7 +208,7 @@ async function load_recipes(user, cuisine, meal) {
 
     // if bottom of screen is reached, load the next 10 recipes
     window.onscroll = async () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && end < num_recipes) {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight && nun_recipes == 10) {
             
             const currentScrollPosition = window.scrollY;
             start += 10; // update counter
@@ -227,6 +227,10 @@ async function load_recipes(user, cuisine, meal) {
             else {
                 num_recipes = await query_recipes('/all_recipes', 'recipes', 'All Recipes', start, end);
             }
+
+            console.log(start);
+            console.log(end);
+            console.log(num_recipes);
             
             window.scrollTo(0, currentScrollPosition);
         }
