@@ -117,15 +117,21 @@ async function generate_page(title, api_path, id) {
         document.querySelector('#all_recipes').style.display = 'none';
         document.querySelector('#recipe-view').style.display = 'none';
         document.querySelector('#matched_recipes-view').style.display = 'none';
-        document.querySelector('#favorites-view').style.display = 'none';
 
         if (title == "Cuisines") {
             document.querySelector('#cuisines-view').style.display = 'block';
+            document.querySelector('#favorites-view').style.display = 'none';
             document.querySelector('#meals-view').style.display = 'none';
+        }
+        else if (title == "Meals") {
+            document.querySelector('#cuisines-view').style.display = 'none';
+            document.querySelector('#favorites-view').style.display = 'none';
+            document.querySelector('#meals-view').style.display = 'block';
         }
         else {
             document.querySelector('#cuisines-view').style.display = 'none';
-            document.querySelector('#meals-view').style.display = 'block';
+            document.querySelector('#favorites-view').style.display = 'block';
+            document.querySelector('#meals-view').style.display = 'none';
         }
 
         // Clean div
@@ -135,7 +141,9 @@ async function generate_page(title, api_path, id) {
 
             // Set the content depending upon search
             let content = object.title;
-            content = object;
+            if (title == "Cuisines" || title == "Meals") {
+                content = object;
+            }
 
             // Make list html and append to ul
             const element = make_html_element(content, content+'_li', 'li_item', 'li');
@@ -149,9 +157,13 @@ async function generate_page(title, api_path, id) {
                 // Load all recipes with that category
                 element.addEventListener('click', () => load_recipes(user='', cuisine=content, meal='', favorites=false));
             }
-            else  {
+            else if (title == "Meals") {
                 // Load all recipes with that category
                 element.addEventListener('click', () => load_recipes(user='', cuisine='', meal=content, favorites=false));
+            }
+            else {
+                // Load that recipes page when name is clicked
+                element.addEventListener('click', () => load_recipe(content));
             }
         });
     }

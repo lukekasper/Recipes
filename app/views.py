@@ -376,15 +376,15 @@ def search_recipes(request, title):
         search_list = title.split(", ")
 
         final_results = []
+        queryset = Recipe.objects.all()
 
-        # loop over all recipes
         for search in search_list:
-
-            results = Recipe.objects.filter(
+            queryset = queryset.filter(
                 Q(title__icontains=search) | Q(ingredients__icontains=search)
-            ).values_list('title', flat=True).distinct()
+            )
 
-            final_results = list(set(final_results) | set(results))
+        # Extract the distinct titles from the filtered queryset
+        final_results = list(queryset.values_list('title', flat=True).distinct())
 
         return JsonResponse({"matched_recipes": final_results})
 
@@ -523,9 +523,10 @@ def favorites(request):
 
         # get recipes favorited by signed in user
         recipes = request.user.favorites.all()
+        recipes, remaining = paginate_recipes(request, recipes)
 
         # .serialize() creates a text string for json object
-        return JsonResponse({"list": [recipe.serialize() for recipe in recipes]})
+        return JsonResponse({"recipes": [recipe.serialize() for recipe in recipes], "remaining": remaining})
 
     # return error code if any other exception occurs
     except Exception as e:
