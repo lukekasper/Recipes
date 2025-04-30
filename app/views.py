@@ -10,6 +10,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from .models import User, Recipe, Comment
+from django.conf import settings
+import os
+from django.core.files import File
+
 
 def login_view(request):
     """
@@ -139,10 +143,20 @@ def add_recipe(request):
 
             # get image if one was uploaded, otherwise use stock image
             if request.FILES.get("image", False):
-                #image = request.FILES["image"]
                 image = request.FILES["image"]
             else:
-                image = "images/no_image.jpeg"
+                static_file_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'no_image.jpeg')
+                try:
+                    # Open the static file and wrap it in a Django File object
+                    with open(static_file_path, 'rb') as f:
+                        fallback_image = File(f, name='no_image.jpeg')
+                        print("Fallback logic executed!")
+                        # Assign the fallback image to the ImageField
+                        image = fallback_image
+                        print("Fallback image successfully assigned!")
+                except FileNotFoundError:
+                    print("Fallback image not found!")
+                    raise ValueError("Fallback image not found in static/images!")
 
             # add ingredients and directions
             ingredients = list(request.POST.get("ingredients").split(","))
@@ -164,7 +178,6 @@ def add_recipe(request):
             recipe.note = notes
 
             # try to create recipie
-
             recipe.save()
             return JsonResponse({"message": "Recipe added."}, status=200)
 

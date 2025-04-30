@@ -877,20 +877,7 @@ function edit_view(subrec_list) {
 
     // Add event listener to save recipe modifications
     const title = document.querySelector("#recipe-title").innerHTML;
-    save_button.addEventListener('click', () => {
-        
-        if (document.querySelector("#text_edit").value)
-        {
-            const userConfirmed = confirm("You have unsaved updates, Proceed?");
-            if (userConfirmed) {
-                save_updates(title);
-            }
-        }
-        else
-        {
-            save_updates(title);
-        }
-    })
+    save_button.addEventListener('click', () => save_updates(title));
 }
 
 // Add bullets to text editor on Enter key press

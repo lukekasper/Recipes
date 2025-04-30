@@ -699,7 +699,13 @@ async function load_recipe(title) {
             const edit_button = make_html_element("Edit Recipe", 'edit-button', 'btn btn-sm btn-outline-primary', 'button');
 
             // Event listeners for modification/deletion of recipe
-            delete_button.addEventListener('click', () => delete_recipe(data.recipe.title));
+            delete_button.addEventListener('click', () => {
+                const userConfirmed = confirm("Are you sure you want to delete?");
+    
+                if (userConfirmed) {
+                    delete_recipe(data.recipe.title);
+                }
+            })
             edit_button.addEventListener('click', () => edit_view(subrec_list));
 
             title_container.append(delete_button);
@@ -871,7 +877,20 @@ function edit_view(subrec_list) {
 
     // Add event listener to save recipe modifications
     const title = document.querySelector("#recipe-title").innerHTML;
-    save_button.addEventListener('click', () => save_updates(title));
+    save_button.addEventListener('click', () => {
+        
+        if (document.querySelector("#text_edit").value)
+        {
+            const userConfirmed = confirm("You have unsaved updates, Proceed?");
+            if (userConfirmed) {
+                save_updates(title);
+            }
+        }
+        else
+        {
+            save_updates(title);
+        }
+    })
 }
 
 // Add bullets to text editor on Enter key press

@@ -879,7 +879,7 @@ function edit_view(subrec_list) {
     const title = document.querySelector("#recipe-title").innerHTML;
     save_button.addEventListener('click', () => {
         
-        if (document.querySelector("#text_edit").value)
+        if (document.querySelector("#text-edit").value)
         {
             const userConfirmed = confirm("You have unsaved updates, Proceed?");
             if (userConfirmed) {

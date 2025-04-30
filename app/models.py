@@ -10,6 +10,9 @@ from django.db import models
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from .custom_storage import OverwriteStorage
+from django.core.files import File
+from io import BytesIO
+
 
 class User(AbstractUser):
     """
@@ -91,10 +94,30 @@ class Recipe(models.Model):
         if self.image:
             bucket_name = os.getenv('BUCKETEER_BUCKET_NAME')
             object_name = f'media/images/{self.image.name}'
-
             save_path = os.path.join(settings.MEDIA_ROOT, 'images')
             fs = FileSystemStorage(location=save_path)
-            fs.save(self.image.name, self.image.file)
+
+            if self.image.file.readable():
+                fs.save(self.image.name, self.image.file)
+
+            else:
+                # Fallback logic: Use static image in the source code
+                static_file_path = os.path.join(
+                    settings.BASE_DIR, 'static', 'images', 'no_image.jpeg'
+                )
+
+                try:
+                    # Open the static file and wrap it in a Django File object
+                    with open(static_file_path, 'rb') as f:
+                        file_content = BytesIO(f.read())  # Read content and wrap in BytesIO
+                        fallback_image = File(file_content, name='no_image.jpeg')
+
+                        # Assign the fallback image to the ImageField
+                        self.image.save(fallback_image.name, fallback_image, save=False)
+                except FileNotFoundError:
+                    print("Not saved!")
+                    raise ValueError("Fallback image not found in static/images!")
+                
             file_url = save_path + "/" + self.image.name
 
             command = [
@@ -108,6 +131,8 @@ class Recipe(models.Model):
                 print("Upload successful:", result.stdout.decode('utf-8'))
             except subprocess.CalledProcessError as e:
                 print("Upload failed:", e.stderr.decode('utf-8'))
+        else:
+            print("No image!")
 
         super().save(*args, **kwargs)
 
