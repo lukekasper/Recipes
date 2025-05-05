@@ -138,20 +138,22 @@ class Recipe(models.Model):
 
     
     def delete(self, *args, **kwargs):
-        bucket_name = os.getenv('BUCKETEER_BUCKET_NAME')
-        object_name = f'media/{self.image.name}'
 
-        command = [
-            'aws', 's3', 'rm',
-            f's3://{bucket_name}/{object_name}'
-        ]
+        if self.image.name != "images/no_image.jpeg":
+            bucket_name = os.getenv('BUCKETEER_BUCKET_NAME')
+            object_name = f'media/{self.image.name}'
 
-        try:
-            # Run the command using subprocess
-            result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            print("Delete successful:", result.stdout.decode('utf-8'))
-        except subprocess.CalledProcessError as e:
-            print("Delete failed:", e.stderr.decode('utf-8'))
+            command = [
+                'aws', 's3', 'rm',
+                f's3://{bucket_name}/{object_name}'
+            ]
+
+            try:
+                # Run the command using subprocess
+                result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                print("Delete successful:", result.stdout.decode('utf-8'))
+            except subprocess.CalledProcessError as e:
+                print("Delete failed:", e.stderr.decode('utf-8'))
 
         super().delete(*args, **kwargs)
 
