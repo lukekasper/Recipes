@@ -1005,7 +1005,7 @@ function update_recipe() {
                 let line = list[index]
 
                 if (id.includes("note") || id.includes("dir")) {
-                    if (line.at(-1) != "." || line.at(-1) != "!") {
+                    if (line.at(-1) != "." && line.at(-1) != "!") {
                             line += ".";
                     }
                 }

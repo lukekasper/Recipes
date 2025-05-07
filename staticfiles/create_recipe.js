@@ -104,7 +104,7 @@ function process_list(id) {
             let processed_item = item.charAt(0).toUpperCase() + item.slice(1);
 
             if (id.includes("note") || id.includes("instruction")) {
-                if (processed_item.at(-1) != "." || processed_item.at(-1) != "!") {
+                if (processed_item.at(-1) != "." && processed_item.at(-1) != "!") {
                     processed_item += ".";
                 }
             }
