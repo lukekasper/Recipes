@@ -89,9 +89,11 @@ class Recipe(models.Model):
 
 
     def save(self, *args, **kwargs):
+
+        img_flag = kwargs.pop('img_flag', True)
         
         # Construct the AWS CLI command
-        if self.image:
+        if img_flag:
             bucket_name = os.getenv('BUCKETEER_BUCKET_NAME')
             object_name = f'media/images/{self.image.name}'
             save_path = os.path.join(settings.MEDIA_ROOT, 'images')

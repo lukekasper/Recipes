@@ -291,6 +291,9 @@ def update_recipe(request, title):
             if request.FILES.get("image", False):
                 image = request.FILES["image"]
                 recipe.image = image
+                img_flag = True
+            else:
+                img_flag = False
 
             # Add ingredients and directions
             ingredients = list(request.POST.get("ingredients").split(","))
@@ -314,7 +317,7 @@ def update_recipe(request, title):
             recipe.cooktime = cooktime
             recipe.note = notes
 
-            recipe.save()
+            recipe.save(img_flag)
             return JsonResponse({"message": "Recipe updated."}, status=200)
 
         except ObjectDoesNotExist:
