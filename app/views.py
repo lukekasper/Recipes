@@ -316,8 +316,8 @@ def update_recipe(request, title):
             recipe.meal = meal
             recipe.cooktime = cooktime
             recipe.note = notes
-
-            recipe.save(img_flag)
+            recipe.save(flag=img_flag)
+            
             return JsonResponse({"message": "Recipe updated."}, status=200)
 
         except ObjectDoesNotExist:

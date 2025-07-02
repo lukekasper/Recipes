@@ -90,7 +90,7 @@ class Recipe(models.Model):
 
     def save(self, *args, **kwargs):
 
-        img_flag = kwargs.pop('img_flag', True)
+        img_flag = kwargs.pop('flag', True)
         
         # Construct the AWS CLI command
         if img_flag:
@@ -134,7 +134,7 @@ class Recipe(models.Model):
             except subprocess.CalledProcessError as e:
                 print("Upload failed:", e.stderr.decode('utf-8'))
         else:
-            print("No image!")
+            print("No new image uploaded, using original image.")
 
         super().save(*args, **kwargs)
 
