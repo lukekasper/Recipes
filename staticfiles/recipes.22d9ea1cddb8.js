@@ -296,7 +296,10 @@ function make_recipe_html(recipe) {
     document.querySelector("#all_recipes").append(line_hr);
 
     // default to hiding comments
-    document.getElementById('comments-div_' + recipe_title).style.display = 'none';
+    try {
+        document.querySelector('#comments-div_'+recipe_title).style.display = 'none';
+    } catch (e) {
+    if (e instanceof SyntaxError) {pass}
 
     // add event listener for poster to change color when moused over
     title.addEventListener('mouseover', () => {title.style.color = "Blue";});

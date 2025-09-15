@@ -296,7 +296,7 @@ function make_recipe_html(recipe) {
     document.querySelector("#all_recipes").append(line_hr);
 
     // default to hiding comments
-    document.querySelector('#comments-div_'+recipe_title).style.display = 'none';
+    document.getElementById('comments-div_' + recipe_title).style.display = 'none';
 
     // add event listener for poster to change color when moused over
     title.addEventListener('mouseover', () => {title.style.color = "Blue";});
@@ -1081,7 +1081,7 @@ async function return_recipes() {
 
     let recipe_list = [];
 
-    const responseJSON = await getData('/all_recipes', 'GET');
+    const responseJSON = await getData('/all_recipes', 'GET', 'all', 'true');
 
     if (responseJSON.responseError.length === 0) {
 
@@ -1096,6 +1096,7 @@ async function return_recipes() {
     // otherwise display error message to the user
     else {
         error = responseJSON.responseError;
+        console.error(error)
         return recipe_list
     }
 }

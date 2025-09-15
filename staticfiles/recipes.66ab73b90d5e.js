@@ -296,7 +296,7 @@ function make_recipe_html(recipe) {
     document.querySelector("#all_recipes").append(line_hr);
 
     // default to hiding comments
-    document.getElementById('comments-div_' + recipe_title).style.display = 'none';
+    document.querySelector('#comments-div_'+recipe_title).style.display = 'none';
 
     // add event listener for poster to change color when moused over
     title.addEventListener('mouseover', () => {title.style.color = "Blue";});
@@ -1091,12 +1091,13 @@ async function return_recipes() {
             recipe_list.push(recipe.title);
         })
 
+        console.log(recipe_list);
+
         return recipe_list
     }
     // otherwise display error message to the user
     else {
         error = responseJSON.responseError;
-        console.error(error)
         return recipe_list
     }
 }
@@ -1211,6 +1212,8 @@ async function getData(url, apiMethod, param1Name = '', data1 = '', param2Name =
     else if (param1Name.length != 0) {
         urlWithParams = `${url}?${param1Name}=${encodeURIComponent(data1)}`;
     }
+
+    console.log(urlWithParams);
 
     showSpinner(spinner);
 

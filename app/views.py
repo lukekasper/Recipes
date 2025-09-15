@@ -207,7 +207,11 @@ def all_recipes(request):
     try:
         recipes = Recipe.objects.all()
         recipes = recipes.order_by("-timestamp").all()
-        recipes, remaining = paginate_recipes(request, recipes)
+
+        if not bool(request.GET.get("all") or False):
+            recipes, remaining = paginate_recipes(request, recipes)
+        else:
+            remaining = 0
 
         # .serialize() creates a text string for json object
         return JsonResponse({"recipes": [recipe.serialize() for recipe in recipes], "remaining": remaining})
